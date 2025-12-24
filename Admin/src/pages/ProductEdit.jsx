@@ -65,7 +65,23 @@ export default function ProductEdit() {
   const PRESET_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
   // Temporary state for adding custom colors
-  const [newColor, setNewColor] = useState({ name: '', class: '' });
+  const [newColor, setNewColor] = useState({ name: '', class: '', image: '' });
+
+  const handleAddColor = () => {
+    if (newColor.name && newColor.class) {
+      setFormData({
+        ...formData,
+        colors: [...formData.colors, newColor],
+      });
+      setNewColor({ name: '', class: '', image: '' });
+    }
+  };
+
+  const handleRemoveColor = (index) => {
+    const newColors = [...formData.colors];
+    newColors.splice(index, 1);
+    setFormData({ ...formData, colors: newColors });
+  };
 
   const [variants, setVariants] = useState([]);
   const [images, setImages] = useState([]);
@@ -1102,6 +1118,94 @@ export default function ProductEdit() {
           <label htmlFor="isActive" className="admin-label mb-0 ml-2">
             Product is active
           </label>
+        </div>
+
+        {/* Color Management Section */}
+        <div className="admin-card space-y-6">
+          <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Product Colors (Visual Options)</h2>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Add the color bubbles that appear on the product page. You can link a specific image to each color.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
+            <input
+              type="text"
+              placeholder="Color Name (e.g. Blue)"
+              value={newColor.name}
+              onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+              className="admin-input"
+            />
+            <input
+              type="text"
+              placeholder="Hex Code (e.g. #0000FF) or Class"
+              value={newColor.class}
+              onChange={(e) => setNewColor({ ...newColor, class: e.target.value })}
+              className="admin-input"
+            />
+
+            {/* Image Selector for Color */}
+            <select
+              value={newColor.image}
+              onChange={(e) => setNewColor({ ...newColor, image: e.target.value })}
+              className="admin-input"
+            >
+              <option value="">Select Image (Optional)</option>
+              {/* Show uploaded images */}
+              {images.map((img, idx) => (
+                <option key={img._id || idx} value={img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`}>
+                  Image {idx + 1}
+                </option>
+              ))}
+              {/* Show pending images if any */}
+              {mainImageFiles.map((file, idx) => (
+                <option key={`pending-${idx}`} value={URL.createObjectURL(file)}>
+                  Pending Image {idx + 1} (Save first to persist)
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={handleAddColor}
+              className="admin-button-primary flex items-center justify-center"
+            >
+              <FiPlus className="mr-2" /> Add Color
+            </button>
+          </div>
+
+          {/* Added Colors List */}
+          {formData.colors.length > 0 && (
+            <div className="space-y-2">
+              {formData.colors.map((color, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg border" style={{ borderColor: 'var(--border-color)' }}>
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className="w-8 h-8 rounded-full border border-gray-300 shadow-sm"
+                      style={{ backgroundColor: color.class.startsWith('#') || color.class.startsWith('rgb') ? color.class : undefined }}
+                    >
+                      {/* If utilizing tailwind class only */}
+                      {!color.class.startsWith('#') && !color.class.startsWith('rgb') && (
+                        <div className={`w-full h-full rounded-full ${color.class}`}></div>
+                      )}
+                    </div>
+                    <span style={{ color: 'var(--text-primary)' }} className="font-medium">{color.name}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{color.class}</span>
+                    {color.image && (
+                      <div className="flex items-center ml-4">
+                        <img src={color.image} alt={color.name} className="w-8 h-8 object-cover rounded border border-gray-200" />
+                        <span className="text-xs ml-2 text-green-600">Has Image</span>
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveColor(index)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
 

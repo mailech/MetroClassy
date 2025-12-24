@@ -115,6 +115,51 @@ const ProductDetails = () => {
     setQuantity((prev) => Math.max(prev - 1, 1));
   };
 
+
+
+  // Normalize images (useMemo to be efficient and accessible)
+  const productImages = product?.images && product.images.length > 0
+    ? product.images.map(img => {
+      if (!img) return 'https://via.placeholder.com/800x800';
+      if (img.startsWith('http')) return img;
+      const cleanPath = img.replace(/\\/g, '/');
+      return `http://localhost:5000${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
+    })
+    : [product?.image ? (product.image.startsWith('http') ? product.image : `http://localhost:5000${product.image}`) : 'https://via.placeholder.com/800x800'];
+
+  // Auto-select first option if available and nothing selected
+  useEffect(() => {
+    if (product && !loading) {
+      if (product.sizes?.length > 0 && !selectedSize) setSelectedSize(product.sizes[0]);
+      if (product.colors?.length > 0 && !selectedColor) setSelectedColor(product.colors[0]?.name);
+    }
+  }, [product, loading, selectedSize, selectedColor]);
+
+  // EFFECT: Switch Image when Color Changes
+  useEffect(() => {
+    if (selectedColor && colors.length > 0) {
+      const colorObj = colors.find(c => c.name === selectedColor);
+
+      if (colorObj && colorObj.image) {
+        // Normalize the color image URL to match productImages format
+        const colorImgUrl = colorObj.image.startsWith('http')
+          ? colorObj.image
+          : `http://localhost:5000${colorObj.image.startsWith('/') ? '' : '/'}${colorObj.image.replace(/\\/g, '/')}`;
+
+        // Find index
+        const index = productImages.findIndex(img => img === colorImgUrl);
+
+        if (index !== -1) {
+          setCurrentImageIndex(index);
+        } else {
+          // Fallback: Try looser matching (e.g. just filename) if exact match fails
+          const fallbackIndex = productImages.findIndex(img => img.includes(colorObj.image.split(/[/\\]/).pop()));
+          if (fallbackIndex !== -1) setCurrentImageIndex(fallbackIndex);
+        }
+      }
+    }
+  }, [selectedColor, colors, productImages]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -140,19 +185,6 @@ const ProductDetails = () => {
       </div>
     );
   }
-
-
-  // ... inside image normalization logic:  
-  // Use product.images if available, otherwise use the main image or a placeholder
-  const productImages = (product.images && product.images.length > 0
-    ? product.images
-    : [product.image || 'https://via.placeholder.com/800x800']
-  ).map(img => {
-    if (!img) return 'https://via.placeholder.com/800x800';
-    if (img.startsWith('http')) return img;
-    const cleanPath = img.replace(/\\/g, '/');
-    return `http://localhost:5000${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
-  });
 
   const openProductLightbox = (index) => {
     setLightboxImages(productImages);
