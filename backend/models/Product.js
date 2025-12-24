@@ -70,6 +70,7 @@ const productSchema = new mongoose.Schema({
     name: { type: String, trim: true },
     class: { type: String, default: 'bg-gray-500' }, // Tailwind class or hex code
     selectedClass: { type: String }, // Optional: border ring color
+    image: { type: String }, // URL of the image associated with this color
   }],
   rating: {
     type: Number,
