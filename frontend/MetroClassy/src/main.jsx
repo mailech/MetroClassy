@@ -7,8 +7,8 @@ import { ThemeProvider } from './context/ThemeContext.jsx';
 
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 
-// NOTE: Replace with your actual Google Client ID
-const GOOGLE_CLIENT_ID = "903060516856-jij1t6qdt64q7rs2hiuv7valpci1v7ar.apps.googleusercontent.com";
+// Use Env Var for Google Client ID
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "903060516856-jij1t6qdt64q7rs2hiuv7valpci1v7ar.apps.googleusercontent.com";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
