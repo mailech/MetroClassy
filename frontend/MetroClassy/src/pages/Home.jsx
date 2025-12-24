@@ -129,6 +129,7 @@ const interactiveWardrobe = [
   },
 ];
 const Home = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -678,7 +679,13 @@ const Home = () => {
                 >
                   <div className="aspect-[5/3] w-full overflow-hidden rounded-2xl bg-gray-100">
                     <img
-                      src={product.image}
+                      src={
+                        product.image
+                          ? (product.image.startsWith('http') || product.image.startsWith('data:')
+                            ? product.image
+                            : `${API_URL}${product.image.startsWith('/') ? '' : '/'}${product.image}`)
+                          : 'https://via.placeholder.com/300x300'
+                      }
                       alt={product.name}
                       className="h-full w-full object-cover object-center transition-transform duration-700 ease-out hover:scale-110"
                     />
