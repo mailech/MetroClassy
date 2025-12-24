@@ -76,7 +76,13 @@ const Wishlist = () => {
                   <Link to={`/product/${id}`}>
                     <div className="aspect-[4/3] w-full bg-gray-200 overflow-hidden">
                       <img
-                        src={item.image || 'https://via.placeholder.com/400'}
+                        src={
+                          item.image
+                            ? (item.image.startsWith('http') || item.image.startsWith('data:')
+                              ? item.image
+                              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.image.startsWith('/') ? '' : '/'}${item.image}`)
+                            : 'https://via.placeholder.com/400'
+                        }
                         alt={item.name}
                         className="w-full h-full object-cover transition duration-300 hover:scale-[1.03]"
                         loading="lazy"

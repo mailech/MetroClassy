@@ -98,7 +98,13 @@ const Cart = () => {
                   >
                     <div className="flex-shrink-0">
                       <img
-                        src={item.image || 'https://via.placeholder.com/150'}
+                        src={
+                          item.image
+                            ? (item.image.startsWith('http') || item.image.startsWith('data:')
+                              ? item.image
+                              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.image.startsWith('/') ? '' : '/'}${item.image}`)
+                            : 'https://via.placeholder.com/150'
+                        }
                         alt={item.name}
                         className="w-24 h-24 rounded-md object-cover object-center sm:w-32 sm:h-32"
                       />
