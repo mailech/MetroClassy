@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axios'; // Use configured instance
 import { FiType, FiAperture, FiAward, FiArrowLeft } from 'react-icons/fi';
 import logoLight from '../assets/logo-light-mode.png';
 import logoDark from '../assets/logo-dark-mode.png';
@@ -210,7 +210,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/products');
+        const { data } = await axiosInstance.get('/products');
         const list = Array.isArray(data) ? data : data?.products || [];
         setProducts(list.slice(0, 4)); // Show only first 4 products as featured
         setLoading(false);

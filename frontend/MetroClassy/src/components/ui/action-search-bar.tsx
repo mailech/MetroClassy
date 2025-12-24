@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Loader2 } from "lucide-react";
 import Fuse from "fuse.js";
-import axios from "axios";
+import axiosInstance from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 
 // Types
@@ -50,7 +50,7 @@ function ActionSearchBar() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/products');
+                const { data } = await axiosInstance.get('/products');
                 const list = Array.isArray(data) ? data : data?.products || [];
                 setProducts(list);
             } catch (err) {

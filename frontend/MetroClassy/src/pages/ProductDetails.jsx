@@ -51,11 +51,15 @@ const ProductDetails = () => {
     }
   }, [product, loading, selectedSize, selectedColor]);
 
+  // Determine API URL for images
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+        // Use relative path with configured axios instance
+        const { data } = await axios.get(`/products/${id}`);
         setProduct(data);
         // Default selection logic moved to separate effect or handled below
         setLoading(false);
@@ -123,9 +127,9 @@ const ProductDetails = () => {
       if (!img) return 'https://via.placeholder.com/800x800';
       if (img.startsWith('http')) return img;
       const cleanPath = img.replace(/\\/g, '/');
-      return `http://localhost:5000${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
+      return `${API_URL}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
     })
-    : [product?.image ? (product.image.startsWith('http') ? product.image : `http://localhost:5000${product.image}`) : 'https://via.placeholder.com/800x800'];
+    : [product?.image ? (product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`) : 'https://via.placeholder.com/800x800'];
 
   // Auto-select first option if available and nothing selected
   useEffect(() => {
@@ -144,7 +148,7 @@ const ProductDetails = () => {
         // Normalize the color image URL to match productImages format
         const colorImgUrl = colorObj.image.startsWith('http')
           ? colorObj.image
-          : `http://localhost:5000${colorObj.image.startsWith('/') ? '' : '/'}${colorObj.image.replace(/\\/g, '/')}`;
+          : `${API_URL}${colorObj.image.startsWith('/') ? '' : '/'}${colorObj.image.replace(/\\/g, '/')}`;
 
         // Find index
         const index = productImages.findIndex(img => img === colorImgUrl);
@@ -514,9 +518,9 @@ const ProductDetails = () => {
                           <div className="flex gap-2 overflow-x-auto pb-2">
                             {review.media.map((img, idx) => {
                               // Ensure image URL is absolute
-                              const imgUrl = img.startsWith('http') ? img : `http://localhost:5000${img}`;
+                              const imgUrl = img.startsWith('http') ? img : `${API_URL}${img}`;
                               // Create array of all images for this review for the lightbox
-                              const reviewImages = review.media.map(m => m.startsWith('http') ? m : `http://localhost:5000${m}`);
+                              const reviewImages = review.media.map(m => m.startsWith('http') ? m : `${API_URL}${m}`);
 
                               return (
                                 <img

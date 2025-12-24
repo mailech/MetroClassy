@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axios'; // Use configured instance
 import { FiFilter, FiX, FiSearch, FiChevronDown, FiStar, FiHeart, FiGrid } from 'react-icons/fi';
 import { useWishlist } from '../context/WishlistContext';
 import ProductModal from '../components/ProductModal';
@@ -32,7 +32,7 @@ const Products = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get('http://localhost:5000/api/products');
+        const { data } = await axiosInstance.get('/products');
         const list = Array.isArray(data) ? data : data?.products || [];
         setProducts(list);
         setLoading(false);
