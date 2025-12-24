@@ -161,12 +161,15 @@ const Checkout = () => {
       // Save address if it's new and user wants to save
       if (useNewAddress && saveAddress && user) {
         try {
+          console.log('Attempting to save address...', address);
           await axiosInstance.post('/users/addresses', {
             ...address,
             isDefault: savedAddresses.length === 0,
           });
+          console.log('Address saved successfully');
         } catch (err) {
-          console.error('Failed to save address:', err);
+          console.error('Failed to save address. Status:', err.response?.status, 'Message:', err.response?.data?.message);
+          // Do not stop checkout flow if address save fails
         }
       }
 
@@ -274,6 +277,7 @@ const Checkout = () => {
       rzp.open();
     } catch (error) {
       console.error('Order creation failed:', error);
+      console.log('Error details:', error.response?.data);
       setErrors(error.response?.data?.message || 'Failed to create order. Please try again.');
       setProcessing(false);
     }
