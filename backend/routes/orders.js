@@ -11,6 +11,10 @@ import sendSMS from '../utils/sendSMS.js';
 
 const router = express.Router();
 
+const BACKEND_URL = process.env.NODE_ENV === 'production'
+  ? (process.env.BACKEND_URL || 'https://metroclassy.vercel.app')
+  : 'http://localhost:5000';
+
 // Get all orders with filters
 router.get('/', async (req, res) => {
   try {
@@ -198,18 +202,21 @@ router.post('/', async (req, res) => {
           let imgTag = '';
           if (item.image) {
             const isLocalhost = item.image.startsWith('http://localhost:5000');
+            const isDeployedUrl = item.image.startsWith(BACKEND_URL);
 
-            // Handle local images for embedding (including localhost URLs)
-            if (!item.image.startsWith('http') || isLocalhost) {
+            // Handle local images for embedding (including localhost/deployed URLs)
+            if (!item.image.startsWith('http') || isLocalhost || isDeployedUrl) {
               console.log(`[Email Debug] Processing item image: ${item.image}`);
               const cid = `image${index}@metroclassy`;
 
               // Decode URI component (e.g. %20 -> space)
               let decodedImage = decodeURIComponent(item.image);
 
-              // Strip localhost domain if present
+              // Strip domain if present
               if (isLocalhost) {
                 decodedImage = decodedImage.replace('http://localhost:5000', '');
+              } else if (isDeployedUrl) {
+                decodedImage = decodedImage.replace(BACKEND_URL, '');
               }
 
               const cleanPath = decodedImage.startsWith('/') ? decodedImage.substring(1) : decodedImage;
@@ -232,7 +239,10 @@ router.post('/', async (req, res) => {
                 imgTag = `<img src="cid:${cid}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
               } else {
                 console.error(`[Email Debug] Image file missing at ${absPath}. Fallback to URL.`);
-                imgTag = `<img src="http://localhost:5000${item.image.startsWith('http') ? item.image.replace('http://localhost:5000', '') : item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
+                const imgPath = item.image.startsWith('http')
+                  ? item.image
+                  : `${BACKEND_URL}${item.image.startsWith('/') ? '' : '/'}${item.image}`;
+                imgTag = `<img src="${imgPath}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
               }
             } else {
               // External images
