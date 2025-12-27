@@ -252,6 +252,11 @@ const Products = () => {
                   {sortedProducts.map((product) => {
                     const pid = product._id || product.id;
                     const wished = isInWishlist(pid);
+                    // Use the first image from the gallery if available, matching ProductDetails logic
+                    const displayImage = product.images && product.images.length > 0
+                      ? product.images[0]
+                      : product.image;
+
                     return (
                       <TiltCard key={pid}>
                         <motion.div
@@ -265,7 +270,7 @@ const Products = () => {
                           {/* Image container */}
                           <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
                             <img
-                              src={getImageUrl(product.image)}
+                              src={getImageUrl(displayImage)}
                               alt={product.name}
                               loading="lazy"
                               onError={(e) => {
