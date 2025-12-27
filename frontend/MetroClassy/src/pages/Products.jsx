@@ -273,13 +273,14 @@ const Products = () => {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.5, ease: "easeOut" }}
-                              /* Debug Log */
+                              {/* Debug Log - Fixed Syntax */}
                               {(() => {
                                 const url = getImageUrl(displayImage);
                                 if (index === 0) console.log(`Product: ${product.name}, Raw: ${displayImage}, Rendered: ${url}`);
-                                return null;
                               })()}
-                              src={getImageUrl(displayImage)}
+                              
+                              <motion.img
+                              initial={{ opacity: 0 }}
                               alt={product.name}
                               loading="lazy"
                               onError={(e) => {
