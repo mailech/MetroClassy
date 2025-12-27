@@ -264,13 +264,14 @@ const Products = () => {
                         >
                           {/* Image container */}
                           <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
-                            <motion.img
+                            <img
                               src={getImageUrl(product.image)}
                               alt={product.name}
                               loading="lazy"
                               onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = 'https://via.placeholder.com/300x300?text=Product+Image';
+                                // Fallback to a reliable placeholder
+                                e.target.src = 'https://placehold.co/600x600?text=No+Image';
                               }}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
