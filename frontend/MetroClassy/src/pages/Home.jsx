@@ -285,26 +285,41 @@ const Home = () => {
     }, 2400);
   };
 
-  const handleInteraction = (e, item) => {
-    // Prevent default to ensure our logic runs
-    // Note: If you want text selection or other default behaviors, be careful.
-    // For cards, usually blocking default is fine.
+  // Click handler state
+  const clickTimeoutRef = useRef(null);
 
-    const clickCount = e.detail;
+  const handleInteraction = (e, item) => {
+    // Prevent default to avoid unwanted selection/behavior
+    if (e.preventDefault) e.preventDefault();
+
+    // Check click count from event (standard DOM property)
+    // If e.detail is not available (e.g. some synthetic events), default to 1.
+    const clickCount = e.detail || 1;
 
     if (clickCount === 1) {
-      // Optional: Single click preview or navigate
-      // pushInteractionMessage(`Previewing ${item.name}`);
+      // Create a timeout to allow for a potential second click
+      clickTimeoutRef.current = setTimeout(() => {
+        // If this timer fires, it was a SINGLE click -> Navigate
+        navigate(`/product/${item._id || item.id}`);
+      }, 250); // 250ms delay is standard for distinguishing clicks
     } else if (clickCount === 2) {
-      // Double click: Like
-      toggleWishlist(item);
-      pushInteractionMessage(`Saved to Wishlist: ${item.name}`);
+      // Double click detected!
+      // Clear the single-click navigation timer
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+        clickTimeoutRef.current = null;
+      }
 
-      // Add a temporary subtle scale animation or heart pop effect if we had a ref
-    } else if (clickCount === 3) {
-      // Triple click: Add to Bag
-      addToCart(item);
-      pushInteractionMessage(`Added to Cart: ${item.name}`);
+      // Perform Wishlist Toggle
+      toggleWishlist(item);
+      const action = 'Added to Wishlist'; // We could check `isInWishlist` but this is a simplified feedback
+      pushInteractionMessage(`${action}: ${item.name}`);
+
+      // Trigger a custom event for visual feedback (confetti/toast) if configured globally
+      const event = new CustomEvent('show-notification', {
+        detail: { message: `${item.name} added to wishlist!`, type: 'success' },
+      });
+      window.dispatchEvent(event);
     }
   };
 
@@ -663,10 +678,6 @@ const Home = () => {
             </Link>
           </div>
           <div className="relative mt-8 grid grid-cols-2 gap-3 gap-y-6 lg:grid-cols-3 lg:gap-6">
-            import {getImageUrl} from '../utils/imageUtils';
-            // ... imports
-
-            // (In render)
             {products.slice(0, 3).map((product, idx) => ( // Use dynamic products
               <motion.div
                 key={product._id} // Use _id
