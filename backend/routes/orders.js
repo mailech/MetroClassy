@@ -8,6 +8,7 @@ import Session from '../models/Session.js';
 import { requireAuth, verifyToken } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
 import sendSMS from '../utils/sendSMS.js';
+import ProductImage from '../models/ProductImage.js';
 
 const router = express.Router();
 
@@ -198,56 +199,36 @@ router.post('/', async (req, res) => {
       // Send email to Admin
       try {
         const attachments = [];
-        const orderItemsHtml = createdOrder.orderItems.map((item, index) => {
-          let imgTag = '';
-          if (item.image) {
-            const isLocalhost = item.image.startsWith('http://localhost:5000');
-            const isDeployedUrl = item.image.startsWith(BACKEND_URL);
 
-            // Handle local images for embedding (including localhost/deployed URLs)
-            if (!item.image.startsWith('http') || isLocalhost || isDeployedUrl) {
-              console.log(`[Email Debug] Processing item image: ${item.image}`);
-              const cid = `image${index}@metroclassy`;
-
-              // Decode URI component (e.g. %20 -> space)
-              let decodedImage = decodeURIComponent(item.image);
-
-              // Strip domain if present
-              if (isLocalhost) {
-                decodedImage = decodedImage.replace('http://localhost:5000', '');
-              } else if (isDeployedUrl) {
-                decodedImage = decodedImage.replace(BACKEND_URL, '');
-              }
-
-              const cleanPath = decodedImage.startsWith('/') ? decodedImage.substring(1) : decodedImage;
-
-              // Verify process.cwd()
-              console.log(`[Email Debug] CWD: ${process.cwd()}`);
-
-              const absPath = path.join(process.cwd(), cleanPath);
-              console.log(`[Email Debug] Resolved absolute path: ${absPath}`);
-
-              const exists = fs.existsSync(absPath);
-              console.log(`[Email Debug] File exists: ${exists}`);
-
-              if (exists) {
-                attachments.push({
-                  filename: `product-${index}${path.extname(decodedImage)}`,
-                  path: absPath,
-                  cid: cid
-                });
-                imgTag = `<img src="cid:${cid}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
-              } else {
-                console.error(`[Email Debug] Image file missing at ${absPath}. Fallback to URL.`);
-                const imgPath = item.image.startsWith('http')
-                  ? item.image
-                  : `${BACKEND_URL}${item.image.startsWith('/') ? '' : '/'}${item.image}`;
-                imgTag = `<img src="${imgPath}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
-              }
+        // Pre-process items to validate/fetch images
+        const enrichedItems = await Promise.all(createdOrder.orderItems.map(async (item) => {
+          let imageUrl = item.image;
+          try {
+            // Try to find a fresh image from ProductImage collection first
+            const freshImage = await ProductImage.findOne({ product: item.product }).sort({ order: 1 });
+            if (freshImage && freshImage.image) {
+              imageUrl = freshImage.image;
             } else {
-              // External images
-              imgTag = `<img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
+              // Fallback to Product model if no ProductImage found
+              const product = await Product.findById(item.product);
+              if (product && product.image) {
+                imageUrl = product.image;
+              }
             }
+          } catch (err) {
+            console.log(`[Email Debug] Failed to lookup fresh image for ${item.name}`, err);
+          }
+          // Ensure we have a clean URL
+          if (imageUrl && !imageUrl.startsWith('http')) {
+            imageUrl = `${BACKEND_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+          }
+          return { ...item.toObject(), finalImage: imageUrl };
+        }));
+
+        const orderItemsHtml = enrichedItems.map((item, index) => {
+          let imgTag = '';
+          if (item.finalImage) {
+            imgTag = `<img src="${item.finalImage}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
           }
           return `
               <li style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; align-items: center;">

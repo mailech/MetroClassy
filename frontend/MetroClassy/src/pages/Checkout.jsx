@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiCreditCard, FiSmartphone, FiTag, FiMapPin, FiPlus } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../utils/axios';
+import { getImageUrl } from '../utils/imageUtils';
 import { INDIAN_STATES, searchCities, getStateFromCity } from '../data/indianLocations';
 
 const Checkout = () => {
@@ -587,7 +587,15 @@ const Checkout = () => {
               <div className="space-y-3 mb-4">
                 {cartItems.map((item) => (
                   <div key={item._id} className="flex gap-3">
-                    <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                    <img
+                      src={getImageUrl(item.image)}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/150x150?text=No+Image';
+                      }}
+                    />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{item.name}</p>
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>

@@ -10,6 +10,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import TiltCard from '../components/TiltCard';
+import { getImageUrl } from '../utils/imageUtils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -662,9 +663,13 @@ const Home = () => {
             </Link>
           </div>
           <div className="relative mt-8 grid grid-cols-2 gap-3 gap-y-6 lg:grid-cols-3 lg:gap-6">
-            {trendingProducts.map((product, idx) => (
+            import {getImageUrl} from '../utils/imageUtils';
+            // ... imports
+
+            // (In render)
+            {products.slice(0, 3).map((product, idx) => ( // Use dynamic products
               <motion.div
-                key={product.id}
+                key={product._id} // Use _id
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -679,15 +684,13 @@ const Home = () => {
                 >
                   <div className="aspect-[5/3] w-full overflow-hidden rounded-2xl bg-gray-100">
                     <img
-                      src={
-                        product.image
-                          ? (product.image.startsWith('http') || product.image.startsWith('data:')
-                            ? product.image
-                            : `${API_URL}${product.image.startsWith('/') ? '' : '/'}${product.image}`)
-                          : 'https://via.placeholder.com/300x300'
-                      }
+                      src={getImageUrl(product.images?.[0] || product.image)}
                       alt={product.name}
                       className="h-full w-full object-cover object-center transition-transform duration-700 ease-out hover:scale-110"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/600x600?text=No+Image';
+                      }}
                     />
                   </div>
                   <div className="mt-4 flex flex-col gap-2">
@@ -698,7 +701,7 @@ const Home = () => {
                     <p className={`text-sm ${secondaryText} line-clamp-2`}>{product.description}</p>
                     <div className="mt-2 flex items-center justify-between">
                       <span className={`text-base font-semibold ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-200'}`}>
-                        ${product.price}
+                        ₹{product.price}
                       </span>
                       <button
                         onClick={(e) => {
