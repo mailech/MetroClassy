@@ -4,6 +4,7 @@ import { FiArrowLeft, FiCreditCard, FiSmartphone, FiTag, FiMapPin, FiPlus } from
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
+import axiosInstance from '../utils/axios';
 import { INDIAN_STATES, searchCities, getStateFromCity } from '../data/indianLocations';
 
 const Checkout = () => {
