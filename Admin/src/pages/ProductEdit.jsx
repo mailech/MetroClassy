@@ -204,7 +204,7 @@ export default function ProductEdit() {
       // Add uploaded images to the images array
       const uploadedImages = data.images.map(img => ({
         ...img,
-        url: img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`,
+        url: img.url.startsWith('http') ? img.url : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.url}`,
       }));
       setImages([...images, ...uploadedImages]);
       // Clear previews
@@ -274,13 +274,14 @@ export default function ProductEdit() {
         const response = await adminProductsApi.uploadImages(id, uploadFormData);
         if (response.images && response.images.length > 0) {
           // Set first image as main image
-          const imageUrl = `http://localhost:5000${response.images[0].url}`;
+          const rawUrl = response.images[0].url;
+          const imageUrl = rawUrl.startsWith('http') ? rawUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${rawUrl}`;
           setFormData({ ...formData, image: imageUrl });
           setMainImagePreview(imageUrl);
           // Add all uploaded images to images array
           const uploadedImages = response.images.map(img => ({
             ...img,
-            url: img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`,
+            url: img.url.startsWith('http') ? img.url : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.url}`,
           }));
           setImages(prev => [...prev, ...uploadedImages]);
         }
@@ -356,7 +357,8 @@ export default function ProductEdit() {
 
           if (imageResponse.images && imageResponse.images.length > 0) {
             // Update product with main image URL (first uploaded image)
-            const imageUrl = `http://localhost:5000${imageResponse.images[0].url}`;
+            const rawUrl = imageResponse.images[0].url;
+            const imageUrl = rawUrl.startsWith('http') ? rawUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${rawUrl}`;
             await adminProductsApi.update(createdProduct._id, { image: imageUrl });
           }
         }
