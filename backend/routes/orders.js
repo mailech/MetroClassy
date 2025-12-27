@@ -8,7 +8,6 @@ import Session from '../models/Session.js';
 import { requireAuth, verifyToken } from '../middleware/auth.js';
 import sendEmail from '../utils/sendEmail.js';
 import sendSMS from '../utils/sendSMS.js';
-import ProductImage from '../models/ProductImage.js';
 
 const router = express.Router();
 
@@ -167,7 +166,7 @@ router.post('/', async (req, res) => {
       taxPrice: taxPrice || 0,
       totalPrice: totalPrice,
       couponCode: couponCode || null,
-      discount: discount || req.body.discountPrice || 0,
+      discountPrice: discount || req.body.discountPrice || 0, // Mapped correctly to schema
       isPaid: false,
       status: 'pending',
     });
@@ -204,6 +203,9 @@ router.post('/', async (req, res) => {
         const enrichedItems = await Promise.all(createdOrder.orderItems.map(async (item) => {
           let imageUrl = item.image;
           try {
+            // Dynamic import to avoid top-level issues
+            const ProductImage = (await import('../models/ProductImage.js')).default;
+
             // Try to find a fresh image from ProductImage collection first
             const freshImage = await ProductImage.findOne({ product: item.product }).sort({ order: 1 });
             if (freshImage && freshImage.image) {
