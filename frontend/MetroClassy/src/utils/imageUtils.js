@@ -12,8 +12,14 @@
 export const getImageUrl = (path) => {
     if (!path) return 'https://via.placeholder.com/300x300?text=No+Image';
 
-    // Return as is if it's already a full URL or data URI
-    if (path.startsWith('http') || path.startsWith('data:')) {
+    // Fix: Handle incorrectly saved localhost URLs from DB
+    if (path.includes('localhost')) {
+        // Strip the localhost domain to make it relative and let logic below handle it
+        path = path.replace(/https?:\/\/localhost:\d+/i, '');
+    }
+
+    // Return as is if it's already a full URL (but not localhost) or data URI
+    if ((path.startsWith('http') && !path.includes('localhost')) || path.startsWith('data:')) {
         return path;
     }
 
