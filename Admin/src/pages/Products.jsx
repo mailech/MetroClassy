@@ -209,9 +209,13 @@ export default function Products() {
                       <div className="flex items-center">
                         {product.image && (
                           <img
-                            src={product.image}
+                            src={product.image.startsWith('http') ? product.image : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${product.image}`}
                             alt={product.name}
                             className="h-12 w-12 rounded-md object-cover mr-4"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://via.placeholder.com/48?text=Image';
+                            }}
                           />
                         )}
                         <div>

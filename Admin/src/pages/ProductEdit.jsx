@@ -1048,10 +1048,10 @@ export default function ProductEdit() {
                   e.target.setCustomValidity('');
                 }
               }}
-              required={!mainImageFile && mainImageFiles.length === 0}
+              required={!formData.image && !mainImageFile && mainImageFiles.length === 0 && (!isEditing || images.length === 0)}
               onInvalid={(e) => {
                 // Custom validation message
-                if (!mainImageFile && mainImageFiles.length === 0 && !e.target.value) {
+                if (!formData.image && !mainImageFile && mainImageFiles.length === 0 && (!isEditing || images.length === 0) && !e.target.value) {
                   e.target.setCustomValidity('Please provide an image URL or upload an image file');
                 }
               }}
@@ -1152,7 +1152,7 @@ export default function ProductEdit() {
               <option value="">Select Image (Optional)</option>
               {/* Show uploaded images */}
               {images.map((img, idx) => (
-                <option key={img._id || idx} value={img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`}>
+                <option key={img._id || idx} value={img.url.startsWith('http') ? img.url : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.url}`}>
                   Image {idx + 1}
                 </option>
               ))}
@@ -1409,7 +1409,7 @@ export default function ProductEdit() {
                 {images.map((image) => (
                   <div key={image._id} className="relative group">
                     <img
-                      src={image.url.startsWith('http') ? image.url : `http://localhost:5000${image.url}`}
+                      src={image.url.startsWith('http') ? image.url : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${image.url}`}
                       alt={image.altText || 'Product image'}
                       className="w-full h-32 object-cover rounded-lg border"
                       style={{ borderColor: 'var(--border-color)' }}
