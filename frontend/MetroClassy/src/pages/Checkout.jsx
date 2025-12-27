@@ -402,14 +402,25 @@ const Checkout = () => {
                       <input
                         type="text"
                         placeholder="City"
-                        value={citySearch || address.city}
-                        onChange={(e) => handleCitySearch(e.target.value)}
+                        value={address.city} // Bind directly to address.city to avoid sync issues
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCitySearch(val);
+                          setAddress(prev => ({ ...prev, city: val }));
+                          // Trigger search logic
+                          if (val.length > 1) {
+                            const suggestions = searchCities(val, address.state || null);
+                            setCitySuggestions(suggestions);
+                            setShowCitySuggestions(true);
+                          } else {
+                            setCitySuggestions([]);
+                            setShowCitySuggestions(false);
+                          }
+                        }}
                         onFocus={() => citySearch && setShowCitySuggestions(true)}
                         onBlur={() => {
+                          // Allow click on suggestion before hiding
                           setTimeout(() => {
-                            if (citySearch && !citySuggestions.length) {
-                              setAddress(prev => ({ ...prev, city: citySearch }));
-                            }
                             setShowCitySuggestions(false);
                           }, 200);
                         }}
