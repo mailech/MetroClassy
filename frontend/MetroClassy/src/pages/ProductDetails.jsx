@@ -6,6 +6,7 @@ import axios from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { getImageUrl } from '../utils/imageUtils';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -123,13 +124,8 @@ const ProductDetails = () => {
 
   // Normalize images (useMemo to be efficient and accessible)
   const productImages = product?.images && product.images.length > 0
-    ? product.images.map(img => {
-      if (!img) return 'https://via.placeholder.com/800x800';
-      if (img.startsWith('http')) return img;
-      const cleanPath = img.replace(/\\/g, '/');
-      return `${API_URL}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
-    })
-    : [product?.image ? (product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`) : 'https://via.placeholder.com/800x800'];
+    ? product.images.map(img => getImageUrl(img))
+    : [getImageUrl(product?.image)];
 
   // Auto-select first option if available and nothing selected
   useEffect(() => {
@@ -146,9 +142,7 @@ const ProductDetails = () => {
 
       if (colorObj && colorObj.image) {
         // Normalize the color image URL to match productImages format
-        const colorImgUrl = colorObj.image.startsWith('http')
-          ? colorObj.image
-          : `${API_URL}${colorObj.image.startsWith('/') ? '' : '/'}${colorObj.image.replace(/\\/g, '/')}`;
+        const colorImgUrl = getImageUrl(colorObj.image);
 
         // Find index
         const index = productImages.findIndex(img => img === colorImgUrl);
@@ -518,9 +512,9 @@ const ProductDetails = () => {
                           <div className="flex gap-2 overflow-x-auto pb-2">
                             {review.media.map((img, idx) => {
                               // Ensure image URL is absolute
-                              const imgUrl = img.startsWith('http') ? img : `${API_URL}${img}`;
+                              const imgUrl = getImageUrl(img);
                               // Create array of all images for this review for the lightbox
-                              const reviewImages = review.media.map(m => m.startsWith('http') ? m : `${API_URL}${m}`);
+                              const reviewImages = review.media.map(m => getImageUrl(m));
 
                               return (
                                 <img

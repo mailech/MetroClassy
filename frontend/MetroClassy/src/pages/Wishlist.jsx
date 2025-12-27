@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist, clearWishlist } = useWishlist();
@@ -76,13 +77,7 @@ const Wishlist = () => {
                   <Link to={`/product/${id}`}>
                     <div className="aspect-[4/3] w-full bg-gray-200 overflow-hidden">
                       <img
-                        src={
-                          item.image
-                            ? (item.image.startsWith('http') || item.image.startsWith('data:')
-                              ? item.image
-                              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.image.startsWith('/') ? '' : '/'}${item.image}`)
-                            : 'https://via.placeholder.com/400'
-                        }
+                        src={getImageUrl(item.image)}
                         alt={item.name}
                         className="w-full h-full object-cover transition duration-300 hover:scale-[1.03]"
                         loading="lazy"

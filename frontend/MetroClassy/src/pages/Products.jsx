@@ -7,6 +7,7 @@ import { FiFilter, FiX, FiSearch, FiChevronDown, FiStar, FiHeart, FiGrid } from 
 import { useWishlist } from '../context/WishlistContext';
 import ProductModal from '../components/ProductModal';
 import TiltCard from '../components/TiltCard';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Products = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -266,13 +267,7 @@ const Products = () => {
                           <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
                             <motion.img
                               layoutId={`image-${pid}`}
-                              src={
-                                product.image
-                                  ? (product.image.startsWith('http') || product.image.startsWith('data:')
-                                    ? product.image
-                                    : `${API_URL}${product.image.startsWith('/') ? '' : '/'}${product.image}`)
-                                  : 'https://via.placeholder.com/300x300'
-                              }
+                              src={getImageUrl(product.image)}
                               alt={product.name}
                               loading="lazy"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

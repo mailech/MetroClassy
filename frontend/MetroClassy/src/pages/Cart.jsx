@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiTrash2, FiArrowLeft, FiCreditCard } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
@@ -98,13 +99,7 @@ const Cart = () => {
                   >
                     <div className="flex-shrink-0">
                       <img
-                        src={
-                          item.image
-                            ? (item.image.startsWith('http') || item.image.startsWith('data:')
-                              ? item.image
-                              : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.image.startsWith('/') ? '' : '/'}${item.image}`)
-                            : 'https://via.placeholder.com/150'
-                        }
+                        src={getImageUrl(item.image)}
                         alt={item.name}
                         className="w-24 h-24 rounded-md object-cover object-center sm:w-32 sm:h-32"
                       />

@@ -239,7 +239,8 @@ router.post('/:id/reviews', upload.array('media', 5), async (req, res) => {
     if (typeof mediaUrls === 'string') mediaUrls = [mediaUrls]; // Handle single string if any
 
     if (req.files && req.files.length > 0) {
-      const uploadedUrls = req.files.map(file => getFileUrl(file.filename));
+      // With Cloudinary storage, file.path is the FULL URL
+      const uploadedUrls = req.files.map(file => file.path);
       mediaUrls = [...(Array.isArray(mediaUrls) ? mediaUrls : []), ...uploadedUrls];
     }
 

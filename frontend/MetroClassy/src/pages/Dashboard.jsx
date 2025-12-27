@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FiShoppingBag, FiTrendingUp, FiDollarSign, FiX, FiMapPin, FiPackage } from 'react-icons/fi';
+import { getImageUrl } from '../utils/imageUtils';
 
 const StatCard = ({ label, value, hint, icon: Icon, color = 'indigo' }) => (
   <div className={`rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-gray-100 dark:border-white/10 p-4 sm:p-5`}>
@@ -387,7 +388,7 @@ const Dashboard = () => {
                     {selectedOrder.orderItems.map((item, idx) => (
                       <div key={idx} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-white/5">
                         <div className="w-20 h-24 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h5 className="font-semibold text-gray-900 dark:text-white truncate">{item.name}</h5>
