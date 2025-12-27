@@ -206,33 +206,61 @@ router.post('/', async (req, res) => {
             // Dynamic import to avoid top-level issues
             const ProductImage = (await import('../models/ProductImage.js')).default;
 
-            // Try to find a fresh image from ProductImage collection first
-            const freshImage = await ProductImage.findOne({ product: item.product }).sort({ order: 1 });
-            if (freshImage && freshImage.image) {
-              imageUrl = freshImage.image;
-            } else {
-              // Fallback to Product model if no ProductImage found
-              const product = await Product.findById(item.product);
-              if (product && product.image) {
-                imageUrl = product.image;
-              }
-            }
-          } catch (err) {
-            console.log(`[Email Debug] Failed to lookup fresh image for ${item.name}`, err);
-          }
-          // Ensure we have a clean URL
-          if (imageUrl && !imageUrl.startsWith('http')) {
-            imageUrl = `${BACKEND_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-          }
-          return { ...item.toObject(), finalImage: imageUrl };
-        }));
+            // Pre-process items to validate/fetch images
+            const enrichedItems = await Promise.all(createdOrder.orderItems.map(async (item) => {
+              let imageUrl = item.image;
+              try {
+                // Dynamic import to avoid top-level issues
+                const ProductImage = (await import('../models/ProductImage.js')).default;
 
-        const orderItemsHtml = enrichedItems.map((item, index) => {
-          let imgTag = '';
-          if (item.finalImage) {
-            imgTag = `<img src="${item.finalImage}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
-          }
-          return `
+                // Try to find a fresh image from ProductImage collection first
+                const freshImage = await ProductImage.findOne({ product: item.product }).sort({ order: 1 });
+
+                // Fix: ProductImage model uses 'url' field, not 'image'
+                if (freshImage && freshImage.url) {
+                  imageUrl = freshImage.url;
+                } else {
+                  // Fallback to Product model if no ProductImage found
+                  // Note: Product model uses 'image' field
+                  const product = await Product.findById(item.product);
+                  if (product && product.image) {
+                    imageUrl = product.image;
+                  }
+                }
+              } catch (err) {
+                console.log(`[Email Debug] Failed to lookup fresh image for ${item.name}`, err);
+              }
+
+              // Ensure we have a clean URL
+              if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+                // Determine backend URL dynamically if env var is missing or incorrect
+                // This handles cases where BACKEND_URL might default to frontend URL
+                const protocol = req.protocol;
+                const host = req.get('host');
+                const dynamicBackendUrl = `${protocol}://${host}`;
+
+                // Prefer env var if it's explicitly set to a remote URL, otherwise use dynamic
+                const baseUrl = (process.env.BACKEND_URL && process.env.BACKEND_URL.startsWith('http'))
+                  ? process.env.BACKEND_URL
+                  : dynamicBackendUrl;
+
+                imageUrl = `${baseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+              }
+
+              // Final fallback if image is still missing or invalid
+              if (!imageUrl) {
+                imageUrl = 'https://placehold.co/150x150?text=No+Image';
+              }
+
+              return { ...item.toObject(), finalImage: imageUrl };
+            }));
+
+            const orderItemsHtml = enrichedItems.map((item, index) => {
+              let imgTag = '';
+              if (item.finalImage) {
+                imgTag = `<img src="${item.finalImage}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;" />`;
+              }
+              return `
               <li style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; align-items: center;">
                  ${imgTag}
                  <div>
@@ -240,16 +268,16 @@ router.post('/', async (req, res) => {
                    Size: ${item.size || 'N/A'} | Color: ${item.color || 'N/A'} | Qty: ${item.qty} x ₹${item.price}
                  </div>
               </li>`;
-        }).join('');
+            }).join('');
 
-        const isCod = createdOrder.paymentMethod === 'cod' || createdOrder.paymentMethod === 'Cash on Delivery';
-        const paymentStatusText = createdOrder.isPaid
-          ? 'Payment Successful'
-          : (isCod ? 'Pending Payment (Cash on Delivery)' : 'Pending Payment');
+            const isCod = createdOrder.paymentMethod === 'cod' || createdOrder.paymentMethod === 'Cash on Delivery';
+            const paymentStatusText = createdOrder.isPaid
+              ? 'Payment Successful'
+              : (isCod ? 'Pending Payment (Cash on Delivery)' : 'Pending Payment');
 
-        const customerPhone = req.user?.phone || createdOrder.shippingAddress?.phone || 'Not Provided';
+            const customerPhone = req.user?.phone || createdOrder.shippingAddress?.phone || 'Not Provided';
 
-        const message = `
+            const message = `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
           <h1 style="color: #4f46e5;">New Order Received!</h1>
           <p>You have received a new order on MetroClassy.</p>
@@ -275,18 +303,18 @@ router.post('/', async (req, res) => {
         </div>
       `;
 
-        await sendEmail({
-          email: process.env.ADMIN_EMAIL || 'aidenaiden.3108@gmail.com',
-          subject: `New Order Alert: ${createdOrder.orderNumber}`,
-          message,
-          attachments,
-        });
-        console.log('Order notification email sent to admin');
-      } catch (emailError) {
-        console.error('Failed to send order email:', emailError);
-        // Ensure we don't fail the request just because email failed
-      }
-    }
+            await sendEmail({
+              email: process.env.ADMIN_EMAIL || 'aidenaiden.3108@gmail.com',
+              subject: `New Order Alert: ${createdOrder.orderNumber}`,
+              message,
+              attachments,
+            });
+            console.log('Order notification email sent to admin');
+          } catch (emailError) {
+            console.error('Failed to send order email:', emailError);
+            // Ensure we don't fail the request just because email failed
+          }
+        }
 
 
 
@@ -294,8 +322,8 @@ router.post('/', async (req, res) => {
     // SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
     // -------------------------------------------------------------------------
     if (req.user && req.user.email) {
-      try {
-        const customerMessage = `
+          try {
+            const customerMessage = `
           <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
             <div style="text-align: center; margin-bottom: 20px;">
               <h1 style="color: #4f46e5; margin: 0;">Order Confirmed!</h1>
@@ -318,28 +346,28 @@ router.post('/', async (req, res) => {
           </div>
         `;
 
-        await sendEmail({
-          email: req.user.email,
-          subject: `Order Confirmation: ${createdOrder.orderNumber} - MetroClassy`,
-          message: customerMessage,
-          // We can optionally reuse attachments if needed, but simple HTML is often safer for immediate confirms
-        });
-        console.log(`[Email Success] Order confirmation sent to customer: ${req.user.email}`);
-      } catch (customerEmailError) {
-        console.error('[Email Error] Failed to send customer confirmation:', customerEmailError);
-      }
-    }
+            await sendEmail({
+              email: req.user.email,
+              subject: `Order Confirmation: ${createdOrder.orderNumber} - MetroClassy`,
+              message: customerMessage,
+              // We can optionally reuse attachments if needed, but simple HTML is often safer for immediate confirms
+            });
+            console.log(`[Email Success] Order confirmation sent to customer: ${req.user.email}`);
+          } catch (customerEmailError) {
+            console.error('[Email Error] Failed to send customer confirmation:', customerEmailError);
+          }
+        }
 
-    res.status(201).json({
-      message: 'Order created successfully',
-      orderNumber: createdOrder.orderNumber,
-      order: createdOrder,
+        res.status(201).json({
+          message: 'Order created successfully',
+          orderNumber: createdOrder.orderNumber,
+          order: createdOrder,
+        });
+      } catch (error) {
+        console.error('Order creation error:', error);
+        res.status(500).json({ message: error.message });
+      }
     });
-  } catch (error) {
-    console.error('Order creation error:', error);
-    res.status(500).json({ message: error.message });
-  }
-});
 
 // Get single order
 router.get('/:id', async (req, res) => {
