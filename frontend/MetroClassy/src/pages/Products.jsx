@@ -255,7 +255,6 @@ const Products = () => {
                     return (
                       <TiltCard key={pid}>
                         <motion.div
-                          layoutId={`card-${pid}`}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.9 }}
@@ -266,7 +265,6 @@ const Products = () => {
                           {/* Image container */}
                           <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
                             <motion.img
-                              layoutId={`image-${pid}`}
                               src={getImageUrl(product.image)}
                               alt={product.name}
                               loading="lazy"
