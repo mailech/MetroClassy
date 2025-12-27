@@ -377,13 +377,28 @@ const Checkout = () => {
               {(useNewAddress || savedAddresses.length === 0) && (
                 <div className="space-y-4">
                   {savedAddresses.length > 0 && (
-                    <button
-                      onClick={() => setUseNewAddress(false)}
-                      className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
-                    >
-                      ← Use saved address
-                    </button>
+                    <div className="flex justify-between items-center">
+                      <button
+                        onClick={() => setUseNewAddress(false)}
+                        className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+                      >
+                        ← Use saved address
+                      </button>
+                    </div>
                   )}
+                  {/* Clear Form Button */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => {
+                        setAddress({ name: '', phone: '', street: '', city: '', state: '', zip: '' });
+                        setCitySearch('');
+                        localStorage.removeItem('checkoutAddress');
+                      }}
+                      className="text-xs text-red-500 hover:text-red-700 underline"
+                    >
+                      Clear Form
+                    </button>
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input
@@ -613,7 +628,7 @@ const Checkout = () => {
                 {cartItems.map((item) => (
                   <div key={item._id} className="flex gap-3">
                     <img
-                      src={getImageUrl(item.image)}
+                      src={getImageUrl(item.product?.image || item.image)}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-lg"
                       onError={(e) => {

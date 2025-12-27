@@ -26,7 +26,7 @@ router.put('/', requireAuth, async (req, res) => {
       product: product._id,
       name: item.name || product.name,
       price: item.price || product.price,
-      image: item.image || product.image,
+      image: product.image, // Always use fresh image from product DB to avoid stale URLs
       quantity: Math.max(1, Number(item.quantity) || 1),
       variant: item.variant || '',
       size: item.size || item.selectedSize || '',
