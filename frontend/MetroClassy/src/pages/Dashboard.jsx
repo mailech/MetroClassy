@@ -388,7 +388,12 @@ const Dashboard = () => {
                     {selectedOrder.orderItems.map((item, idx) => (
                       <div key={idx} className="flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-white/5">
                         <div className="w-20 h-24 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                          <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://via.placeholder.com/100x120?text=Item';
+                            }}
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h5 className="font-semibold text-gray-900 dark:text-white truncate">{item.name}</h5>

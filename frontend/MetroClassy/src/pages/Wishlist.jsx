@@ -81,6 +81,10 @@ const Wishlist = () => {
                         alt={item.name}
                         className="w-full h-full object-cover transition duration-300 hover:scale-[1.03]"
                         loading="lazy"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/400x300?text=Product';
+                        }}
                       />
                     </div>
                   </Link>

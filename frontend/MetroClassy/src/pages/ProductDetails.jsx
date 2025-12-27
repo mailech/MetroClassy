@@ -228,6 +228,10 @@ const ProductDetails = () => {
                   alt={product.name}
                   onClick={() => openProductLightbox(currentImageIndex)}
                   className="h-full w-full object-contain object-center cursor-zoom-in"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/600x600?text=Product+Image';
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -274,6 +278,10 @@ const ProductDetails = () => {
                       src={img}
                       alt={`${product.name} - ${index + 1}`}
                       className="h-full w-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/100x100?text=Thumbnail';
+                      }}
                     />
                   </button>
                 ))}

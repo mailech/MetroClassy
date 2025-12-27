@@ -102,6 +102,10 @@ const Cart = () => {
                         src={getImageUrl(item.image)}
                         alt={item.name}
                         className="w-24 h-24 rounded-md object-cover object-center sm:w-32 sm:h-32"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/150x150?text=Product';
+                        }}
                       />
                     </div>
 
