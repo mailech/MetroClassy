@@ -260,16 +260,19 @@ const Products = () => {
                     return (
                       <TiltCard key={pid}>
                         <motion.div
-                          initial={{ opacity: 0, y: 20 }}
+                          initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                          transition={{ duration: 0.25 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} // Custom smooth bezier
                           onClick={() => setSelectedProduct(product)}
-                          className="group relative h-full cursor-pointer rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300"
+                          className="group relative h-full cursor-pointer rounded-xl sm:rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-gray-100 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-500"
                         >
                           {/* Image container */}
                           <div className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
-                            <img
+                            <motion.img
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
                               src={getImageUrl(displayImage)}
                               alt={product.name}
                               loading="lazy"
@@ -278,7 +281,7 @@ const Products = () => {
                                 // Fallback to a reliable placeholder
                                 e.target.src = 'https://placehold.co/600x600?text=No+Image';
                               }}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" // Slower scale transition (700ms)
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

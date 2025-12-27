@@ -7,11 +7,12 @@ const TiltCard = ({ children, className = "", ...props }) => {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
-    const mouseXSpring = useSpring(x);
-    const mouseYSpring = useSpring(y);
+    const springConfig = { damping: 25, stiffness: 120, mass: 0.5 }; // Smoother, slightly slower
+    const mouseXSpring = useSpring(x, springConfig);
+    const mouseYSpring = useSpring(y, springConfig);
 
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]); // Reduced angle for subtlety
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
 
     const handleMouseMove = (e) => {
         if (!ref.current) return;
