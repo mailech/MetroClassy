@@ -332,7 +332,8 @@ router.post(
 
       const images = req.files.map((file, index) => ({
         product: product._id,
-        url: getFileUrl(file.filename),
+        // vital: for Cloudinary, file.path is the full secure URL. Prefer it.
+        url: (file.path && file.path.startsWith('http')) ? file.path : getFileUrl(file.filename),
         isMain: index === 0 && !req.body.isMain, // First image is main by default
         altText: req.body.altText || product.name,
         order: index,
