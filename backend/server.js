@@ -50,10 +50,11 @@ const allowedOrigins = process.env.FRONTEND_URL
     'http://localhost:5173', // Vite frontend (shop)
     'http://localhost:5174', // Vite admin (if run separately)
     'http://localhost:4173', // Vite preview
-    'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
     'https://metro-classy.vercel.app',
-    'https://metroclassy-admin.vercel.app'
+    'https://metroclassy-admin.vercel.app',
+    'https://metroclassy.com',
+    'https://www.metroclassy.com'
   ];
 
 app.use(cors({
