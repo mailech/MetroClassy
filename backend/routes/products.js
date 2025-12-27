@@ -70,10 +70,32 @@ router.get('/', async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
 
-    const products = await Product.find(query)
+    let products = await Product.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
+
+    // Enrich products with valid images from ProductImage collection
+    // This fixes the issue where the main 'image' field might be old/broken but 'ProductImage' has valid uploads
+    const ProductImage = (await import('../models/ProductImage.js')).default;
+
+    products = await Promise.all(products.map(async (p) => {
+      const validImage = await ProductImage.findOne({ product: p._id }).sort({ order: 1 });
+      if (validImage) {
+        // If we found a valid image in the separate collection, assume it's the good one
+        // Return it as the main image AND in the images array
+        return {
+          ...p,
+          image: validImage.url,
+          images: [validImage.url]
+        };
+      }
+      return {
+        ...p,
+        images: [p.image] // Fallback
+      };
+    }));
 
     const total = await Product.countDocuments(query);
 
