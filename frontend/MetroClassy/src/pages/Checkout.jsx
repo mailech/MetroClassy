@@ -49,10 +49,17 @@ const Checkout = () => {
   const [errors, setErrors] = useState('');
   const [saveAddress, setSaveAddress] = useState(true);
 
-  // Load saved addresses
+  // Load saved addresses and persistent form data
   useEffect(() => {
     const loadAddresses = async () => {
+      // Try to load cached guest address first
+      const cachedAddress = localStorage.getItem('checkoutAddress');
+      if (cachedAddress) {
+        setAddress(JSON.parse(cachedAddress));
+      }
+
       if (!user) return;
+
       try {
         const { data } = await axiosInstance.get('/users/addresses');
         setSavedAddresses(data.addresses || []);
@@ -79,6 +86,11 @@ const Checkout = () => {
     };
     loadAddresses();
   }, [user, useNewAddress]);
+
+  // Persist address changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('checkoutAddress', JSON.stringify(address));
+  }, [address]);
 
   // Handle city search - filter by selected state
   const handleCitySearch = (value) => {
@@ -277,8 +289,9 @@ const Checkout = () => {
       rzp.open();
     } catch (error) {
       console.error('Order creation failed:', error);
-      console.log('Error details:', error.response?.data);
-      setErrors(error.response?.data?.message || 'Failed to create order. Please try again.');
+      const serverMsg = error.response?.data?.message;
+      const debugMsg = error.response?.data?.stack ? ` (Debug: ${error.response.data.stack.split('\n')[0]})` : '';
+      setErrors(serverMsg ? `${serverMsg}${debugMsg}` : 'Failed to create order. Please try again.');
       setProcessing(false);
     }
   };
