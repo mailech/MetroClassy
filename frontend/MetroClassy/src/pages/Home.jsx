@@ -686,57 +686,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Interactive Wardrobe (Hidden on Mobile for Sleekness) */}
-      <div className={`hidden md:block py-12 transition-colors duration-300 ${sectionMuted}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden rounded-[2.5rem]">
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-gray-400">
-                Responsive wardrobe
-              </p>
-              <h2 className="text-2xl font-bold">Tap, double tap, press & feel</h2>
-              <p className={`${secondaryText} mt-1`}>
-                These cards react differently to each gesture so you can preview how interactions will feel in the final product grid.
-              </p>
-            </div>
-            {interactionMessage && (
-              <div className={`rounded-full px-5 py-3 text-sm shadow ${theme === 'light' ? 'bg-white text-gray-700' : 'bg-white/10 text-white'}`}>
-                {interactionMessage}
-              </div>
-            )}
-          </div>
-          <div className="relative mt-8 grid gap-6 md:grid-cols-3">
-            {interactiveWardrobe.map((item, idx) => (
-              <motion.div
-                key={item.id}
-                className={`rounded-3xl p-6 shadow-lg border cursor-pointer select-none ${theme === 'light' ? 'border-transparent bg-white text-gray-900' : 'border-white/10 bg-[#0c0f2a]/80 text-white backdrop-blur'
-                  }`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02, transition: { type: 'spring', stiffness: 300 } }}
-                whileTap={{ scale: 0.98 }}
-                onClick={(e) => handleInteraction(e, item)}
-              >
-                <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-100">
-                  <img src={item.image} alt={item.name} className="h-full w-full object-cover object-center" />
-                </div>
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-gray-500">
-                    <span>{item.dna}</span>
-                    <span>${item.price}</span>
-                  </div>
-                  <h3 className={`text-xl font-semibold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-                    {item.name}
-                  </h3>
-                  <p className={`text-sm ${secondaryText}`}>{item.colorStory}</p>
-                  <p className={`text-xs tracking-[0.3em] ${secondaryText}`}>{item.reaction}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+
 
       {/* Signature Filters + Search */}
       <div className="py-16 bg-gradient-to-b from-indigo-950/80 via-slate-950 to-gray-50 text-white">
@@ -747,7 +697,7 @@ const Home = () => {
                 Signature Insignias
               </p>
               <h2 className="mt-4 text-3xl font-bold">
-                Browse by emblem, material, and couture story
+                The Collection edit
               </h2>
               <p className="mt-2 text-indigo-100/80 max-w-2xl">
                 Toggle a capsule to preview headline pieces or jump directly to the dedicated category shelf.
@@ -876,44 +826,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Salium Font Feature card */}
-      <div className={`py-14 transition-colors duration-300 ${sectionMuted}`}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="salium-card p-10 sm:p-14 relative overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <img
-                src={swirlLogo}
-                alt=""
-                className="w-full max-w-[420px] object-contain"
-                style={sectionSwirlStyle}
-              />
-            </div>
-            <div className="salium-card__body space-y-6">
-              <p className="text-xs tracking-[0.5em] uppercase text-white/70">
-                {saliumHeroProduct.badge}
-              </p>
-              <h2 className="text-4xl sm:text-5xl leading-tight">
-                {saliumHeroProduct.name}
-              </h2>
-              <p className="text-base text-white/85 max-w-2xl">
-                {saliumHeroProduct.description}
-              </p>
-              <div className="flex flex-wrap gap-4 items-center">
-                <span className="text-3xl tracking-[0.4em]">
-                  ${saliumHeroProduct.price}
-                </span>
-                <button
-                  onClick={() => navigate('/products?category=wordmark')}
-                  className={`rounded-full px-6 py-3 text-sm font-semibold ${theme === 'light' ? 'bg-white/90 text-gray-900 hover:bg-white' : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
-                >
-                  View capsule
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Featured Products */}
       <div className={`py-12 transition-colors duration-300 ${sectionSurface}`}>

@@ -19,7 +19,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState({
-    category: 'all',
+    category: 'All',
     minPrice: '',
     maxPrice: '',
     rating: 0,
@@ -28,7 +28,7 @@ const Products = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  const categories = ['all', 'Wordmark', 'Infinity Sigil', 'Outline Seal'];
+  const categories = ['All', 'Hoodies', 'Oversized T-shirts', 'Sweatshirts', 'Acid Wash'];
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -71,7 +71,7 @@ const Products = () => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesCategory = filters.category === 'all' ||
+    const matchesCategory = filters.category === 'All' ||
       product.category === filters.category;
 
     const matchesPrice = (!filters.minPrice || product.price >= Number(filters.minPrice)) &&
@@ -99,7 +99,7 @@ const Products = () => {
 
   const resetFilters = () => {
     setFilters({
-      category: 'all',
+      category: 'All',
       minPrice: '',
       maxPrice: '',
       rating: 0,
