@@ -134,8 +134,6 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [glowPosition, setGlowPosition] = useState({ x: 150, y: 150 });
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [interactionMessage, setInteractionMessage] = useState('');
@@ -164,11 +162,8 @@ const Home = () => {
   // Use the same watermark/logo for both themes so the hero card stays consistent
   const heroWatermark = swirlLogo;
   const heroSwirlStyle = { opacity: 0.12 };
-  const sectionSwirlStyle = { opacity: 0.12 };
   const navigate = useNavigate();
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+  // Simplified animations: Removed heavy useScroll/useTransform logic for performance
   const brandLogos = [
     { src: themePrimaryLogo, label: 'MetroClassy Wordmark' },
     { src: themePrimaryLogo, label: 'MetroClassy Sigil' },
@@ -232,19 +227,7 @@ const Home = () => {
     };
   }, []);
 
-  const handleHeroMouseMove = (event) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - bounds.left;
-    const y = event.clientY - bounds.top;
-    const rotateY = ((x / bounds.width) - 0.5) * 12;
-    const rotateX = ((y / bounds.height) - 0.5) * -12;
-    setGlowPosition({ x, y });
-    setTilt({ x: rotateX, y: rotateY });
-  };
 
-  const resetHeroTilt = () => {
-    setTilt({ x: 0, y: 0 });
-  };
 
   const filteredCuratedProducts = curatedProducts.filter((product) => {
     const matchesCategory =
@@ -347,10 +330,8 @@ const Home = () => {
           {/* =====================================================================================
               DESKTOP HERO VIEW (Hidden on Mobile)
               ===================================================================================== */}
-          <motion.div
+          <div
             className="hidden lg:grid relative gap-10 lg:grid-cols-2 rounded-3xl p-8 sm:p-12 text-white shadow-2xl hero-canvas"
-            onMouseMove={handleHeroMouseMove}
-            onMouseLeave={resetHeroTilt}
             style={{
               backgroundImage: 'linear-gradient(135deg, rgba(34, 29, 58, 0.96) 0%, rgba(54, 42, 99, 0.9) 40%, rgba(44, 86, 150, 0.92) 100%)',
               backgroundBlendMode: 'overlay',
@@ -358,39 +339,26 @@ const Home = () => {
             }}
           >
             {/* Ambient orbs for typical desktop view */}
-            <motion.div
-              className="hero-orb"
+            {/* Ambient orbs - Static for performance */}
+            <div
+              className="hero-orb absolute rounded-full blur-[80px]"
               style={{
-                y: y1,
                 width: '260px',
                 height: '260px',
                 top: '12%',
                 left: '6%',
-                background: 'radial-gradient(circle, rgba(120, 96, 255, 0.55), transparent 60%)',
+                background: 'radial-gradient(circle, rgba(120, 96, 255, 0.4), transparent 70%)',
               }}
               aria-hidden="true"
             />
-            <motion.div
-              className="hero-orb slow"
+            <div
+              className="hero-orb absolute rounded-full blur-[90px]"
               style={{
-                y: y2,
                 width: '320px',
                 height: '320px',
                 bottom: '8%',
                 right: '10%',
-                background: 'radial-gradient(circle, rgba(66, 188, 255, 0.45), transparent 60%)',
-              }}
-              aria-hidden="true"
-            />
-            <motion.div
-              className="hero-orb pulse"
-              style={{
-                y: y1,
-                width: '180px',
-                height: '180px',
-                bottom: '22%',
-                left: '32%',
-                background: 'radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 70%)',
+                background: 'radial-gradient(circle, rgba(66, 188, 255, 0.3), transparent 70%)',
               }}
               aria-hidden="true"
             />
@@ -405,18 +373,7 @@ const Home = () => {
                 transition={{ duration: 1 }}
               />
             </div>
-            <div
-              className="pointer-events-none absolute inset-0"
-              aria-hidden="true"
-            >
-              <div
-                className="absolute h-64 w-64 rounded-full bg-white/10 blur-3xl transition-all duration-300"
-                style={{
-                  left: `${glowPosition.x - 128}px`,
-                  top: `${glowPosition.y - 128}px`,
-                }}
-              ></div>
-            </div>
+
 
             <div className="relative z-10">
               <motion.p
@@ -520,12 +477,8 @@ const Home = () => {
               </div>
             </div>
 
-            <motion.div
-              className="relative z-10 flex items-center justify-center"
-              style={{
-                transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                transition: 'transform 0.2s ease-out',
-              }}
+            <div
+              className="relative z-10 flex items-center justify-center transition-transform duration-300 hover:scale-[1.01]"
             >
               <div className="relative h-[600px] w-full max-w-lg">
                 <motion.div
@@ -583,8 +536,8 @@ const Home = () => {
                   </div>
                 </motion.div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* =====================================================================================
               MOBILE HERO VIEW (Visible ONLY on Mobile)

@@ -23,7 +23,7 @@ import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import Notification from './components/Notification';
 import IntroOverlay from './components/IntroOverlay';
-import ShaderBackground from './components/ui/ShaderBackground';
+// import ShaderBackground from './components/ui/ShaderBackground';
 import swirlLogo from './assets/logo-watermark.png';
 import heroDark from './assets/hero-dark.png';
 import './App.css';
@@ -106,62 +106,8 @@ function App() {
       window.removeEventListener('show-notification', handleNotification);
       clearTimeout(loadingTimer);
     };
-    // Initialize Lenis for smooth scrolling
-    import('@studio-freight/lenis').then((LenisModule) => {
-      const Lenis = LenisModule.default || LenisModule;
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        direction: 'vertical',
-        gestureDirection: 'vertical',
-        smooth: true,
-        mouseMultiplier: 1,
-        smoothTouch: false,
-        touchMultiplier: 2,
-      });
-
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-
-      requestAnimationFrame(raf);
-    });
-
-  }, []);
-
-  useEffect(() => {
-    const pointer = {
-      targetX: 50,
-      targetY: 50,
-      currentX: 50,
-      currentY: 50,
-    };
-
-    const handlePointerMove = (event) => {
-      pointer.targetX = (event.clientX / window.innerWidth) * 100;
-      pointer.targetY = (event.clientY / window.innerHeight) * 100;
-    };
-
-    const animateGlow = () => {
-      pointer.currentX += (pointer.targetX - pointer.currentX) * 0.08;
-      pointer.currentY += (pointer.targetY - pointer.currentY) * 0.08;
-
-      document.documentElement.style.setProperty('--cursor-x', `${pointer.currentX}%`);
-      document.documentElement.style.setProperty('--cursor-y', `${pointer.currentY}%`);
-
-      animationRef.current = requestAnimationFrame(animateGlow);
-    };
-
-    animationRef.current = requestAnimationFrame(animateGlow);
-    window.addEventListener('pointermove', handlePointerMove);
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+    // Initialize configured theme
+    // (Optional: Add lightweight global listeners here if strictly necessary)
   }, []);
 
   if (loading) {
@@ -189,7 +135,7 @@ function App() {
                 aria-hidden="true"
               />
               <div className="relative z-10 flex flex-col min-h-screen">
-                <ShaderBackground />
+                {/* ShaderBackground removed for performance */}
                 <IntroOverlay />
                 <Navbar />
                 <main className="flex-grow bg-transparent pt-20">
