@@ -162,6 +162,7 @@ const Home = () => {
   // Use the same watermark/logo for both themes so the hero card stays consistent
   const heroWatermark = swirlLogo;
   const heroSwirlStyle = { opacity: 0.12 };
+  const sectionSwirlStyle = { opacity: 0.12 };
   const navigate = useNavigate();
   // Simplified animations: Removed heavy useScroll/useTransform logic for performance
   const brandLogos = [
