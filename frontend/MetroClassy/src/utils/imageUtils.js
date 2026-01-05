@@ -32,22 +32,26 @@ export const getImageUrl = (path) => {
     }
 
     // Get API URL from env or default
-    // Check if VITE_API_URL is set, otherwise fallback
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     // Normalize path separators (replace Windows \ with /)
     const cleanPath = path.replace(/\\/g, '/');
-
-    // Remove leading slash if present to avoid double slashes with API_URL
     const normalizedPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
 
-    // Ensure API_URL doesn't end with slash if we're engaging (it usually doesn't, but safe to handle)
-    // Actually, cleanPath assumption: "uploads/image.jpg"
-    // API URL: "https://api.com"
-    // Result: "https://api.com/uploads/image.jpg"
+    // FIX: If the path is a local upload (starts with 'uploads/'), it is served from ROOT, not /api
+    // So we must strip '/api' suffix if present in the base URL.
+    if (normalizedPath.startsWith('uploads/')) {
+        // Remove trailing slash if present
+        if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
 
-    // Check if API_URL ends with slash
-    const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+        // Remove '/api' suffix if present
+        if (API_URL.endsWith('/api')) {
+            API_URL = API_URL.slice(0, -4);
+        }
+    } else {
+        // For other paths, ensure no trailing slash for consistency
+        if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
+    }
 
-    return `${baseUrl}/${normalizedPath}`;
+    return `${API_URL}/${normalizedPath}`;
 };
