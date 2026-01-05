@@ -424,3 +424,29 @@ body {
 [data-theme='light'] .salium-card::before {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
 }
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+
+  .dynamic-backdrop::before,
+  .dynamic-backdrop::after,
+  .hero-canvas::before,
+  .hero-canvas::after,
+  .surface::after,
+  .surface::before,
+  .brand-watermark {
+    filter: blur(10px) !important;
+    /* Reduce massive blurs */
+    mix-blend-mode: normal !important;
+    /* Avoid expensive blending */
+    animation-duration: 0s !important;
+    /* Pause complex background animations or make them very slow? Better to pause for buttery scroll */
+    /* actually let's keep animation but simpler if possible, but removing blend mode helps tons */
+  }
+
+  /* Keep essential animations but remove expensive filters */
+  .hero-orb {
+    filter: blur(15px);
+    /* Reduced from 30px */
+  }
+}
