@@ -749,14 +749,14 @@ const Home = () => {
             {/* Search removed as per new design */}
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-10 flex gap-4 overflow-x-auto pb-4 sm:flex-wrap sm:overflow-visible sm:pb-0 no-scrollbar snap-x">
             {themedFilterCategories.map((category) => {
               const Icon = category.icon;
               return (
                 <button
                   key={category.slug}
                   onClick={() => handleCategoryNavigate(category)}
-                  className={`flex items-center gap-3 rounded-3xl px-5 py-3 transition-all border ${selectedCategory === category.label
+                  className={`flex-shrink-0 snap-start flex items-center gap-3 rounded-3xl px-5 py-3 transition-all border ${selectedCategory === category.label
                     ? 'bg-white text-gray-900 shadow-lg shadow-indigo-700/30 border-indigo-200'
                     : 'bg-white/10 text-white hover:bg-white/20 border-white/30'
                     }`}
