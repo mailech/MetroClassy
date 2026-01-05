@@ -68,67 +68,84 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: 'LOAD_CART', payload: hasLocalCart() });
   }, [user]);
 
-  // Save to localStorage (scoped by user) whenever items change
+  // Save to localStorage (scoped by user) AND Sync with Backend whenever items change
   useEffect(() => {
     localStorage.setItem(getStorageKey(), JSON.stringify(state.items));
+
+    // Auto-sync with backend if user is logged in (Debounced)
+    if (user && state.items.length >= 0) {
+      const timeoutId = setTimeout(() => {
+        axios.put('/cart', { items: state.items })
+          .catch(err => console.error('Background cart sync failed', err));
+      }, 1000); // Debounce for 1 second
+      return () => clearTimeout(timeoutId);
+    }
   }, [state.items, user]);
 
-  // Sync with backend on login
+  // Initial Cart Load & Merge on Login
   useEffect(() => {
-    const syncCart = async () => {
-      if (!user) return;
+    let mounted = true;
 
+    const initializeCart = async () => {
+      // 1. Get Guest Cart
       const guestCart = JSON.parse(localStorage.getItem('cart_guest') || '[]');
-      const userCart = hasLocalCart(); // Current user's local cart (might be empty if new login)
 
-      // Merge guest cart into user cart if guest cart exists (common behavior)
-      // Then clean up guest cart
-      const itemsToSync = [...userCart, ...guestCart];
-
-      if (guestCart.length > 0) {
-        localStorage.removeItem('cart_guest');
+      // 2. If no user, just load guest cart
+      if (!user) {
+        if (mounted) dispatch({ type: 'LOAD_CART', payload: guestCart });
+        return;
       }
 
+      // 3. If User Logged In: Fetch Server Cart and Merge with Guest Cart
       try {
         const { data } = await axios.get('/cart');
         const serverItems = data?.items || [];
 
-        const mergedMap = new Map();
-        [...serverItems, ...itemsToSync].forEach((item) => {
-          const id = item.product || item._id || item.id;
-          if (!id) return;
-          const existing = mergedMap.get(id) || { quantity: 0 };
-          mergedMap.set(id, {
-            ...existing,
-            ...item,
-            _id: id,
-            quantity: Math.max(1, (existing.quantity || 0) + (item.quantity || 1)), // Logic can be refined to not double count if overlap
+        let mergedItems = [...serverItems];
+
+        // Merge guest items into server items if any
+        if (guestCart.length > 0) {
+          const mergedMap = new Map();
+          // Add server items first
+          serverItems.forEach(item => {
+            const key = item.product || item._id; // product ID is the unique key
+            mergedMap.set(key, item);
           });
-        });
 
-        // Refined quantity merge logic: if server has 2 and local has 2, it's 2, unless explicitly added.
-        // For simplicity, we'll assume the sync is "latest state" mostly.
-        const merged = Array.from(mergedMap.values());
+          // Merge guest items
+          guestCart.forEach(gItem => {
+            const key = gItem.product || gItem._id || gItem.id;
+            if (mergedMap.has(key)) {
+              // If exists, prefer server or max logic? Usually just keep server or add quantities.
+              // Here we will just keep existing server item to avoid duplicates, 
+              // OR add quantities if you want. Let's strictly deduplicate by ID.
+            } else {
+              mergedMap.set(key, gItem);
+            }
+          });
 
-        dispatch({ type: 'LOAD_CART', payload: merged });
-        // Save merged state to user's local storage
-        localStorage.setItem(getStorageKey(), JSON.stringify(merged));
+          mergedItems = Array.from(mergedMap.values());
+          // Clear guest cart after merge
+          localStorage.removeItem('cart_guest');
 
-        // Push merged state back to server
-        await axios.put('/cart', { items: merged });
+          // Immediately sync merged state to server
+          await axios.put('/cart', { items: mergedItems });
+        }
+
+        if (mounted) {
+          dispatch({ type: 'LOAD_CART', payload: mergedItems });
+        }
       } catch (err) {
-        console.error('Cart sync failed', err);
+        console.error('Failed to load/merge cart', err);
       }
     };
-    syncCart();
-  }, [user]); // Re-run when user object changes (login)
+
+    initializeCart();
+
+    return () => { mounted = false; };
+  }, [user]); // Only run on mount or login/logout switch
 
   const addToCart = (product) => {
-    // ALLOW GUEST ADD TO CART (User rule said "dont allow user without login to order", but usually adding to cart is allowed. 
-    // If strict no-ordering, blocking add-to-cart is also an option, but blocking checkout is standard. 
-    // The user constraint: "dont allow the user without login to order any product or proceed to the checkout page".
-    // I will allow adding to cart (guest mode) but block checkout (implemented above).
-
     dispatch({ type: 'ADD_ITEM', payload: product });
     window.dispatchEvent(new CustomEvent('show-notification', {
       detail: { message: 'Added to cart', type: 'success' }
@@ -147,13 +164,8 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const getCartItemCount = () => {
-    return state.items.reduce((total, item) => total + item.quantity, 0);
-  };
-
   const clearCart = async () => {
     dispatch({ type: 'CLEAR_CART' });
-    localStorage.removeItem(getStorageKey());
     if (user) {
       try {
         await axios.put('/cart', { items: [] });

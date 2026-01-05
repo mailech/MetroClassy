@@ -1,7 +1,6 @@
 import express from 'express';
 import Product from '../models/Product.js';
 import { upload, getFileUrl } from '../utils/fileUpload.js';
-
 const router = express.Router();
 
 // Get all products with filters and pagination
@@ -78,10 +77,26 @@ router.get('/', async (req, res) => {
 
     // Enrich products with valid images from ProductImage collection
     // This fixes the issue where the main 'image' field might be old/broken but 'ProductImage' has valid uploads
-    const ProductImage = (await import('../models/ProductImage.js')).default;
+    let ProductImage;
+    try {
+      const module = await import('../models/ProductImage.js');
+      ProductImage = module.default;
+      console.log('Successfully loaded ProductImage model');
+    } catch (importErr) {
+      console.error('Failed to load ProductImage model:', importErr);
+      // Continue without extra images
+    }
 
     products = await Promise.all(products.map(async (p) => {
-      const validImage = await ProductImage.findOne({ product: p._id }).sort({ order: 1 });
+      let validImage = null;
+      if (ProductImage) {
+        try {
+          validImage = await ProductImage.findOne({ product: p._id }).sort({ order: 1 });
+        } catch (dbErr) {
+          console.error('Error fetching ProductImage for product', p._id, dbErr);
+        }
+      }
+
       if (validImage) {
         // If we found a valid image in the separate collection, assume it's the good one
         // Return it as the main image AND in the images array

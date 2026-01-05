@@ -28,6 +28,7 @@ import adminCategoryRoutes from './routes/admin/categories.js';
 import adminOrderRoutes from './routes/admin/orders.js';
 import adminMetricsRoutes from './routes/admin/metrics.js';
 import adminAuditLogRoutes from './routes/admin/auditLogs.js';
+import adminCouponRoutes from './routes/admin/coupons.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,6 +95,7 @@ app.use('/api/admin/categories', adminCategoryRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
 app.use('/api/admin/metrics', adminMetricsRoutes);
 app.use('/api/admin/audit-logs', adminAuditLogRoutes);
+app.use('/api/admin/coupons', adminCouponRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

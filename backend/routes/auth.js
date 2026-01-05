@@ -55,9 +55,12 @@ router.post('/register', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        rewards: user.rewards,
+        spinsAvailable: user.spinsAvailable,
       },
     });
   } catch (error) {
+    console.error('Register Error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -102,6 +105,8 @@ router.post('/login', async (req, res) => {
         name: user.name,
         email: user.email,
         picture: user.picture,
+        rewards: user.rewards,
+        spinsAvailable: user.spinsAvailable,
       },
     });
   } catch (error) {
@@ -157,6 +162,8 @@ router.post('/google', async (req, res) => {
         name: user.name,
         email: user.email,
         picture: user.picture,
+        rewards: user.rewards,
+        spinsAvailable: user.spinsAvailable,
       },
     });
 
@@ -186,6 +193,9 @@ router.get('/me', requireAuth, async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        picture: user.picture,
+        rewards: user.rewards,
+        spinsAvailable: user.spinsAvailable,
       },
     });
   } catch (error) {

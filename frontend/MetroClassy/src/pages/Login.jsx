@@ -261,13 +261,53 @@ const Login = () => {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="rounded-3xl bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900 p-1 shadow-2xl"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="hidden lg:flex flex-col justify-center items-center relative overflow-hidden rounded-3xl bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/50 via-slate-900 to-black border border-white/10 text-center p-12 shadow-2xl"
         >
-          <div className="h-full rounded-[calc(1.5rem-4px)] bg-black/40 p-6">
-            <DiscountWheel />
+          {/* Ambient Background Effects */}
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-[80px]" />
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-sm mx-auto">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="mb-8 flex justify-center"
+            >
+              <div className="relative w-40 h-40">
+                <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full animate-pulse" />
+                <img
+                  src={import.meta.env.BASE_URL + 'src/assets/login-logo.png'}
+                  alt="MetroClassy"
+                  className="relative w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                />
+              </div>
+            </motion.div>
+
+            <motion.h2
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-4xl font-bold text-white mb-4 tracking-tight"
+            >
+              Signature Style.
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">
+                Uncompromising Quality.
+              </span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="text-indigo-200/80 leading-relaxed text-lg"
+            >
+              Join the elite circle of MetroClassy members. Early access to drops, curated edits, and rewards that matter.
+            </motion.p>
           </div>
         </motion.div>
       </div>

@@ -12,6 +12,7 @@ import Products from './pages/Products';
 import ProductEdit from './pages/ProductEdit';
 import Categories from './pages/Categories';
 import Orders from './pages/Orders';
+import Coupons from './pages/Coupons';
 import DiscountWheel from './pages/DiscountWheel';
 import Analytics from './pages/Analytics';
 import AuditLogs from './pages/AuditLogs';
@@ -157,6 +158,14 @@ function AppContent() {
                         element={
                           <ProtectedRoute>
                             <Orders />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/coupons"
+                        element={
+                          <ProtectedRoute>
+                            <Coupons />
                           </ProtectedRoute>
                         }
                       />

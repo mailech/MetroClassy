@@ -42,7 +42,9 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll hijacking */
   }
 
   a,
@@ -82,5 +84,9 @@
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #5a6af0, #af5af7);
     border-radius: 999px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
   }
 }

@@ -105,7 +105,7 @@ const Dashboard = () => {
 
   // Calculate analytics
   const totalSpent = orders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
-  const totalSavings = orders.reduce((sum, o) => sum + (o.discount || 0), 0);
+  const totalSavings = orders.reduce((sum, o) => sum + (o.discountPrice || 0), 0);
 
   // Spending over time data
   const spendingData = orders.slice(0, 6).reverse().map((order, idx) => ({
@@ -419,6 +419,31 @@ const Dashboard = () => {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Price Summary */}
+                <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-xl border border-gray-100 dark:border-white/5 mb-6">
+                  <h4 className="font-bold text-gray-900 dark:text-white mb-3">Order Summary</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                      <span>Subtotal</span>
+                      <span>₹{selectedOrder.itemsPrice || selectedOrder.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)}</span>
+                    </div>
+                    {selectedOrder.discountPrice > 0 && (
+                      <div className="flex justify-between text-green-600 dark:text-green-400">
+                        <span>Discount ({selectedOrder.couponCode})</span>
+                        <span>-₹{selectedOrder.discountPrice}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                      <span>Shipping</span>
+                      <span>{selectedOrder.shippingPrice === 0 ? 'Free' : `₹${selectedOrder.shippingPrice}`}</span>
+                    </div>
+                    <div className="border-t border-gray-200 dark:border-white/10 pt-2 mt-2 flex justify-between font-bold text-gray-900 dark:text-white text-base">
+                      <span>Total</span>
+                      <span>₹{selectedOrder.totalPrice}</span>
+                    </div>
                   </div>
                 </div>
 

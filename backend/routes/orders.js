@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
+import Coupon from '../models/Coupon.js';
 import User from '../models/User.js';
 import Session from '../models/Session.js';
 import { requireAuth, verifyToken } from '../middleware/auth.js';
@@ -155,18 +156,76 @@ router.post('/', async (req, res) => {
     const orderNumber = `MC${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
     // Create order
+    // Calculate final discount on server side
+    let finalDiscount = 0;
+    let validatedCouponCode = null;
+
+    if (couponCode) {
+      try {
+        const coupon = await Coupon.findOne({
+          code: couponCode.toUpperCase(),
+          isActive: true,
+        });
+
+        if (coupon) {
+          // Validate Date
+          const now = new Date();
+          if (now >= coupon.validFrom && now <= coupon.validUntil) {
+            // Validate Usage Limit
+            if (!coupon.usageLimit || coupon.usedCount < coupon.usageLimit) {
+              // Validate Min Purchase
+              const currentTotal = itemsPrice || totalPrice || 0;
+              if (currentTotal >= coupon.minPurchase) {
+                // Calculate Discount
+                if (coupon.discountType === 'percentage') {
+                  finalDiscount = (currentTotal * coupon.discountValue) / 100;
+                  if (coupon.maxDiscount) {
+                    finalDiscount = Math.min(finalDiscount, coupon.maxDiscount);
+                  }
+                } else {
+                  finalDiscount = coupon.discountValue;
+                }
+
+                // Ensure discount doesn't exceed total
+                finalDiscount = Math.min(finalDiscount, currentTotal);
+                validatedCouponCode = coupon.code;
+
+                // Increment usage count
+                await Coupon.findByIdAndUpdate(coupon._id, { $inc: { usedCount: 1 } });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Coupon validation error during order creation:', err);
+      }
+    }
+
+    // Recalculate total price
+    // Ensure we handle potential undefined values gracefully
+    const safeItemsPrice = itemsPrice || 0;
+    const safeShippingPrice = shippingPrice || 0;
+    const safeTaxPrice = taxPrice || 0;
+
+    // If totalPrice is provided but itemsPrice is not, use totalPrice logic?
+    // But we prefer calculatedTotal.
+    let calculatedTotal = safeItemsPrice + safeShippingPrice + safeTaxPrice - finalDiscount;
+    // ensure not negative
+    calculatedTotal = Math.max(0, calculatedTotal);
+
+    // Create order
     const order = new Order({
       user: userId,
       orderNumber,
       orderItems,
       shippingAddress,
       paymentMethod: paymentMethod || 'upi',
-      itemsPrice: itemsPrice || totalPrice,
-      shippingPrice: shippingPrice || 0,
-      taxPrice: taxPrice || 0,
-      totalPrice: totalPrice,
-      couponCode: couponCode || null,
-      discountPrice: discount || req.body.discountPrice || 0, // Mapped correctly to schema
+      itemsPrice: safeItemsPrice,
+      shippingPrice: safeShippingPrice,
+      taxPrice: safeTaxPrice,
+      totalPrice: calculatedTotal,
+      couponCode: validatedCouponCode,
+      discountPrice: finalDiscount,
       isPaid: false,
       status: 'pending',
     });
@@ -314,27 +373,111 @@ router.post('/', async (req, res) => {
     // -------------------------------------------------------------------------
     // SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
     // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // SEND ORDER CONFIRMATION EMAIL TO CUSTOMER
+    // -------------------------------------------------------------------------
     if (req.user && req.user.email) {
       try {
+        // Generate HTML for items (Reuse logic or re-run for customer email)
+        const enrichedItemsConfig = await Promise.all(createdOrder.orderItems.map(async (item) => {
+          let imageUrl = item.image;
+          try {
+            // Dynamic import to avoid top-level issues
+            const ProductImage = (await import('../models/ProductImage.js')).default;
+            const freshImage = await ProductImage.findOne({ product: item.product }).sort({ order: 1 });
+            if (freshImage && freshImage.url) {
+              imageUrl = freshImage.url;
+            } else {
+              const product = await Product.findById(item.product);
+              if (product && product.image) imageUrl = product.image;
+            }
+          } catch (err) { }
+
+          if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+            const protocol = req.protocol;
+            const host = req.get('host');
+            const dynamicBackendUrl = `${protocol}://${host}`;
+            const baseUrl = (process.env.BACKEND_URL && process.env.BACKEND_URL.startsWith('http'))
+              ? process.env.BACKEND_URL
+              : dynamicBackendUrl;
+            imageUrl = `${baseUrl}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+          }
+          if (!imageUrl) imageUrl = 'https://placehold.co/150x150?text=No+Image';
+          return { ...item.toObject(), finalImage: imageUrl };
+        }));
+
+        const customerOrderItemsHtml = enrichedItemsConfig.map((item) => {
+          let imgTag = '';
+          if (item.finalImage) {
+            imgTag = `<img src="${item.finalImage}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;" />`;
+          }
+          return `
+              <li style="border-bottom: 1px solid #eee; padding: 15px 0; display: flex; align-items: flex-start;">
+                 ${imgTag}
+                 <div>
+                   <strong style="font-size: 14px; color: #333;">${item.name}</strong>
+                   <div style="font-size: 13px; color: #666; margin-top: 4px;">
+                     Qty: ${item.qty} &nbsp;|&nbsp; ₹${item.price}
+                     ${item.size ? `<br/>Size: ${item.size}` : ''}
+                     ${item.color ? `<br/>Color: ${item.color}` : ''}
+                   </div>
+                 </div>
+              </li>`;
+        }).join('');
+
         const customerMessage = `
-          <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <h1 style="color: #4f46e5; margin: 0;">Order Confirmed!</h1>
-              <p style="font-size: 16px; color: #666;">Hi ${req.user.name}, thanks for your order.</p>
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #4f46e5; margin: 0; font-size: 24px;">Order Confirmed!</h1>
+              <p style="font-size: 16px; color: #666; margin-top: 10px;">Hi ${req.user.name}, thanks for your order.</p>
             </div>
             
-            <div style="background: #fdfdfd; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-              <p style="margin: 5px 0;"><strong>Order Number:</strong> ${createdOrder.orderNumber}</p>
-              <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
-              <p style="margin: 5px 0;"><strong>Payment Status:</strong> ${createdOrder.isPaid ? 'Paid' : 'Pending Payment'}</p>
-              <h2 style="color: #4f46e5; margin-top: 15px;">Total: ₹${createdOrder.totalPrice}</h2>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                 <span style="color: #64748b;">Order Number:</span>
+                 <strong>${createdOrder.orderNumber}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                 <span style="color: #64748b;">Date:</span>
+                 <strong>${new Date().toLocaleDateString()}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                 <span style="color: #64748b;">Payment Status:</span>
+                 <strong style="color: ${createdOrder.isPaid ? '#16a34a' : '#ea580c'}">${createdOrder.isPaid ? 'Paid' : 'Pending Payment'}</strong>
+              </div>
+              <div style="border-top: 1px solid #e2e8f0; margin-top: 15px; padding-top: 15px;">
+                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #64748b; font-size: 14px;">
+                   <span>Subtotal:</span>
+                   <span>₹${createdOrder.itemsPrice}</span>
+                 </div>
+                 ${createdOrder.discountPrice > 0 ? `
+                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #16a34a; font-size: 14px;">
+                   <span>Discount (${createdOrder.couponCode}):</span>
+                   <span>-₹${createdOrder.discountPrice}</span>
+                 </div>` : ''}
+                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #64748b; font-size: 14px;">
+                   <span>Shipping:</span>
+                   <span>${createdOrder.shippingPrice === 0 ? 'Free' : '₹' + createdOrder.shippingPrice}</span>
+                 </div>
+                 <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px dashed #e2e8f0; pt-2;">
+                   <span style="color: #333;">Total:</span>
+                   <span style="color: #4f46e5;">₹${createdOrder.totalPrice}</span>
+                 </div>
+              </div>
+            </div>
+
+            <h3 style="color: #333; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">Order Details</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${customerOrderItemsHtml}
+            </ul>
+            
+            <div style="margin-top: 30px; text-align: center;">
+              <p>We've received your order and are getting it ready!</p>
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile" style="display: inline-block; background-color: #4f46e5; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px;">Track Order</a>
             </div>
             
-            <p>We've received your order and are getting it ready!</p>
-            <p>You can track your order status in your <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile" style="color: #4f46e5;">Profile</a>.</p>
-            
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 12px; color: #999;">
-              <p>MetroClassy Inc.</p>
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 12px; color: #999;">
+              <p>&copy; ${new Date().getFullYear()} MetroClassy Inc. All rights reserved.</p>
             </div>
           </div>
         `;

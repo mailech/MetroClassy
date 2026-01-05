@@ -2,7 +2,8 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axios'; // Use configured instance
-import { FiType, FiAperture, FiAward, FiArrowLeft } from 'react-icons/fi';
+import { FiType, FiAperture, FiAward, FiArrowLeft, FiDisc, FiCommand, FiLayers, FiActivity } from 'react-icons/fi';
+import DiscountWheel from '../components/DiscountWheel';
 import logoLight from '../assets/logo-light-mode.png';
 import logoDark from '../assets/logo-dark-mode.png';
 import swirlLogo from '../assets/logo-watermark.png';
@@ -42,7 +43,7 @@ const curatedProducts = [
   {
     id: 'wordmark-1',
     name: 'Wordmark Satin Bomber',
-    category: 'Wordmark',
+    category: 'Abyss',
     price: 289,
     description: 'Matte satin jacket with hand-applied lettering embroidery.',
     image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80',
@@ -50,7 +51,7 @@ const curatedProducts = [
   {
     id: 'wordmark-2',
     name: 'Letterpress Tote',
-    category: 'Wordmark',
+    category: 'Abyss',
     price: 148,
     description: 'Full-grain leather tote featuring debossed MetroClassy letters.',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80',
@@ -58,7 +59,7 @@ const curatedProducts = [
   {
     id: 'sigil-1',
     name: 'Infinity Sigil Brooch',
-    category: 'Infinity Sigil',
+    category: 'Floral Reverie',
     price: 96,
     description: 'Polished palladium brooch with the iconic infinity ring.',
     image: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=900&q=80',
@@ -66,7 +67,7 @@ const curatedProducts = [
   {
     id: 'sigil-2',
     name: 'Sigil Resin Clutch',
-    category: 'Infinity Sigil',
+    category: 'Floral Reverie',
     price: 210,
     description: 'Smoked resin clutch featuring the circular insignia inlay.',
     image: 'https://images.unsplash.com/photo-1502740479091-635887520276?auto=format&fit=crop&w=900&q=80',
@@ -74,7 +75,7 @@ const curatedProducts = [
   {
     id: 'outline-1',
     name: 'Outline Seal Scarf',
-    category: 'Outline Seal',
+    category: 'Asphalt Nocturne',
     price: 120,
     description: 'Featherweight silk scarf with tonal outline repeat.',
     image: 'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=900&q=80',
@@ -82,7 +83,7 @@ const curatedProducts = [
   {
     id: 'outline-2',
     name: 'Contour Traveler',
-    category: 'Outline Seal',
+    category: 'Unvoiced Arc',
     price: 340,
     description: 'Weekender crafted from nubuck with outline seal hardware.',
     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
@@ -175,28 +176,36 @@ const Home = () => {
 
   const filterCategories = [
     {
-      label: 'Wordmark',
-      description: 'Statement staples stamped with the lettering.',
+      label: 'Abyss',
+      description: 'Deep dive into the unknown aesthetics.',
       logo: themePrimaryLogo,
-      icon: FiType,
+      icon: FiDisc,
       count: 18,
-      slug: 'wordmark',
+      slug: 'abyss',
     },
     {
-      label: 'Infinity Sigil',
-      description: 'Brooches, jewelry, and hardware featuring the loop.',
+      label: 'Floral Reverie',
+      description: 'Nature inspired patterns and flows.',
       logo: themePrimaryLogo,
-      icon: FiAperture,
+      icon: FiCommand,
       count: 12,
-      slug: 'infinity-sigil',
+      slug: 'floral-reverie',
     },
     {
-      label: 'Outline Seal',
-      description: 'Minimal contour pieces for subtle collectors.',
+      label: 'Asphalt Nocturne',
+      description: 'Urban nightscapes and gritty textures.',
       logo: themePrimaryLogo,
-      icon: FiAward,
+      icon: FiLayers,
       count: 9,
-      slug: 'outline-seal',
+      slug: 'asphalt-nocturne',
+    },
+    {
+      label: 'Unvoiced Arc',
+      description: 'Silent geometry and subtle curves.',
+      logo: themePrimaryLogo,
+      icon: FiActivity,
+      count: 7,
+      slug: 'unvoiced-arc',
     },
   ];
   const themedFilterCategories = filterCategories.map((category) => {
@@ -255,8 +264,12 @@ const Home = () => {
   };
 
   const handleCategoryNavigate = (category) => {
-    handleCategorySelect(category.label);
-    handleNavigateToCategory(category.slug);
+    if (selectedCategory === category.label) {
+      handleCategorySelect('all');
+    } else {
+      handleCategorySelect(category.label);
+    }
+    // handleNavigateToCategory(category.slug); // Stay on page for "Collection edit" section
   };
 
   const pushInteractionMessage = (text) => {
@@ -339,10 +352,9 @@ const Home = () => {
               backgroundSize: 'cover',
             }}
           >
-            {/* Ambient orbs for typical desktop view */}
-            {/* Ambient orbs - Static for performance */}
+            {/* Ambient orbs - Reduced blur for performance */}
             <div
-              className="hero-orb absolute rounded-full blur-[80px]"
+              className="hero-orb absolute rounded-full blur-[40px] will-change-transform"
               style={{
                 width: '260px',
                 height: '260px',
@@ -353,7 +365,7 @@ const Home = () => {
               aria-hidden="true"
             />
             <div
-              className="hero-orb absolute rounded-full blur-[90px]"
+              className="hero-orb absolute rounded-full blur-[45px] will-change-transform"
               style={{
                 width: '320px',
                 height: '320px',
@@ -483,7 +495,7 @@ const Home = () => {
             >
               <div className="relative h-[600px] w-full max-w-lg">
                 <motion.div
-                  className="absolute -top-6 -left-6 h-32 w-32 rounded-3xl bg-white/10 blur-2xl"
+                  className="absolute -top-6 -left-6 h-32 w-32 rounded-3xl bg-white/10 blur-xl will-change-transform"
                   animate={{ y: [0, -10, 0], opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 4, repeat: Infinity }}
                 />
@@ -688,6 +700,37 @@ const Home = () => {
 
 
 
+      {/* Metro Rewards / Discount Wheel Section */}
+      <div className="py-16 bg-gray-900 border-y border-white/10 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-white space-y-6">
+              <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold tracking-widest uppercase">
+                Member Perks
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+                Unlock Exclusive <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                  Rewards Daily
+                </span>
+              </h2>
+              <p className="text-lg text-gray-400 max-w-md">
+                Spin the wheel to win exclusive discounts, free shipping, and limited edition access. One spin available per user.
+              </p>
+              <div className="flex items-center gap-4 text-sm text-gray-500 font-medium">
+                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Instant Win</span>
+                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Valid on all items</span>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-3xl opacity-20"></div>
+              <DiscountWheel />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Signature Filters + Search */}
       <div className="py-16 bg-gradient-to-b from-indigo-950/80 via-slate-950 to-gray-50 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -703,24 +746,7 @@ const Home = () => {
                 Toggle a capsule to preview headline pieces or jump directly to the dedicated category shelf.
               </p>
             </div>
-            <div className="relative w-full max-w-md">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search featured items..."
-                className="w-full rounded-full border border-white/10 bg-white/10 py-3 pl-5 pr-12 text-sm text-white placeholder:text-white/70 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/60"
-              />
-              <svg
-                className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/70"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
-              </svg>
-            </div>
+            {/* Search removed as per new design */}
           </div>
 
           <div className="mt-10 flex flex-wrap gap-4">

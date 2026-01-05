@@ -101,6 +101,18 @@ const userSchema = new mongoose.Schema(
         color: String,
       },
     ],
+    rewards: [
+      {
+        couponCode: { type: String, required: true },
+        label: { type: String },
+        wonAt: { type: Date, default: Date.now },
+        isUsed: { type: Boolean, default: false }
+      }
+    ],
+    spinsAvailable: {
+      type: Number,
+      default: 5
+    }
   },
   {
     timestamps: true,

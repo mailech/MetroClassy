@@ -10,6 +10,7 @@ import {
   FiShoppingBag,
   FiFileText,
   FiUser,
+  FiTag,
 } from 'react-icons/fi';
 import brandLogoDark from '../../assets/metroclassy-logo.png';
 import brandLogoLight from '../../assets/metroclassy-logo-light.png';
@@ -21,6 +22,7 @@ const menuItems = [
   { path: '/admin/products', label: 'Products', icon: FiPackage, description: 'Manage inventory' },
   { path: '/admin/categories', label: 'Categories', icon: FiSettings, description: 'Organize products' },
   { path: '/admin/orders', label: 'Orders', icon: FiShoppingBag, description: 'Track shipments' },
+  { path: '/admin/coupons', label: 'Coupons', icon: FiTag, description: 'Manage discounts' },
   { path: '/admin/discount-wheel', label: 'Discount Wheel', icon: FiGift, description: 'Configure rewards' },
   { path: '/admin/analytics', label: 'Analytics', icon: FiBarChart2, description: 'View reports' },
   { path: '/admin/audit-logs', label: 'Audit Logs', icon: FiFileText, description: 'Activity history' },

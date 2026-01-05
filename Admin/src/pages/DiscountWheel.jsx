@@ -37,11 +37,11 @@ export default function DiscountWheel() {
       await queryClient.refetchQueries({ queryKey: ['admin-categories'], type: 'active' });
       await refetchCategories({ cancelRefetch: false });
     };
-    
+
     window.addEventListener('categories-updated', handleCategoriesUpdate);
     // Also refetch on mount
     refetchCategories({ cancelRefetch: false });
-    
+
     return () => {
       window.removeEventListener('categories-updated', handleCategoriesUpdate);
     };
@@ -463,7 +463,7 @@ export default function DiscountWheel() {
 
 function SegmentEditor({ segment, index, isEditing, onEdit, onCancel, onUpdate, onDelete }) {
   const [editData, setEditData] = useState(segment);
-  
+
   // Fetch categories for category selector - refetch on window focus
   const { data: categoriesData, refetch: refetchSegmentCategories } = useQuery({
     queryKey: ['admin-categories'],
@@ -478,9 +478,9 @@ function SegmentEditor({ segment, index, isEditing, onEdit, onCancel, onUpdate, 
     const handleCategoriesUpdate = async () => {
       await refetchSegmentCategories({ cancelRefetch: false });
     };
-    
+
     window.addEventListener('categories-updated', handleCategoriesUpdate);
-    
+
     return () => {
       window.removeEventListener('categories-updated', handleCategoriesUpdate);
     };
@@ -507,7 +507,7 @@ function SegmentEditor({ segment, index, isEditing, onEdit, onCancel, onUpdate, 
       <motion.div
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: 'auto' }}
-        className="border border-gray-200 rounded-lg p-4 space-y-4 bg-gray-50"
+        className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-slate-800"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -601,11 +601,11 @@ function SegmentEditor({ segment, index, isEditing, onEdit, onCancel, onUpdate, 
   }
 
   return (
-    <div 
-      className="flex items-center justify-between p-4 rounded-lg border transition-colors" 
-      style={{ 
-        borderColor: 'var(--border-color)', 
-        backgroundColor: segment.active === false ? 'rgba(0,0,0,0.02)' : 'var(--bg-secondary)' 
+    <div
+      className="flex items-center justify-between p-4 rounded-lg border transition-colors"
+      style={{
+        borderColor: 'var(--border-color)',
+        backgroundColor: segment.active === false ? 'rgba(0,0,0,0.02)' : 'var(--bg-secondary)'
       }}
     >
       <div className="flex items-center space-x-4 flex-1">
@@ -670,11 +670,11 @@ function SegmentEditor({ segment, index, isEditing, onEdit, onCancel, onUpdate, 
 function WheelPreview({ segments }) {
   const activeSegments = segments.filter((seg) => seg.active !== false);
   const totalAngle = 360;
-  
+
   // Calculate total probability for normalization in preview
   const totalProb = activeSegments.reduce((sum, seg) => sum + (parseFloat(seg.probability) || 0), 0);
   const normalizedTotal = totalProb > 0 ? totalProb : 1;
-  
+
   let currentAngle = 0;
 
   if (activeSegments.length === 0) {

@@ -69,9 +69,11 @@ router.post(
   auditLog('CREATE', 'COUPON'),
   async (req, res) => {
     try {
+      console.log('Received Coupon Data:', req.body);
       const {
         code,
         description,
+        category,
         discountType,
         discountValue,
         minPurchase,
@@ -99,6 +101,7 @@ router.post(
       const coupon = new Coupon({
         code: code.toUpperCase(),
         description,
+        category: category || 'all',
         discountType,
         discountValue,
         minPurchase: minPurchase || 0,
@@ -136,6 +139,7 @@ router.put(
       const {
         code,
         description,
+        category,
         discountType,
         discountValue,
         minPurchase,
@@ -148,6 +152,7 @@ router.put(
 
       if (code) coupon.code = code.toUpperCase();
       if (description !== undefined) coupon.description = description;
+      if (category !== undefined) coupon.category = category;
       if (discountType) coupon.discountType = discountType;
       if (discountValue !== undefined) coupon.discountValue = discountValue;
       if (minPurchase !== undefined) coupon.minPurchase = minPurchase;

@@ -63,6 +63,7 @@ router.post('/', async (req, res) => {
     const {
       code,
       description,
+      category,
       discountType,
       discountValue,
       minPurchase,
@@ -87,6 +88,7 @@ router.post('/', async (req, res) => {
     const coupon = new Coupon({
       code: code.toUpperCase(),
       description,
+      category: category || 'all',
       discountType,
       discountValue,
       minPurchase: minPurchase || 0,
@@ -119,6 +121,7 @@ router.put('/:id', async (req, res) => {
     const {
       code,
       description,
+      category,
       discountType,
       discountValue,
       minPurchase,
@@ -131,6 +134,7 @@ router.put('/:id', async (req, res) => {
 
     if (code) coupon.code = code.toUpperCase();
     if (description !== undefined) coupon.description = description;
+    if (category !== undefined) coupon.category = category;
     if (discountType) coupon.discountType = discountType;
     if (discountValue !== undefined) coupon.discountValue = discountValue;
     if (minPurchase !== undefined) coupon.minPurchase = minPurchase;
@@ -173,7 +177,12 @@ router.delete('/:id', async (req, res) => {
 // Validate coupon (for use in checkout)
 router.post('/validate', async (req, res) => {
   try {
-    const { code, totalAmount } = req.body;
+    const { code, totalAmount, cartTotal } = req.body;
+    const amount = cartTotal !== undefined ? cartTotal : totalAmount;
+
+    if (amount === undefined) {
+      return res.status(400).json({ message: 'Cart total is required' });
+    }
 
     const coupon = await Coupon.findOne({
       code: code.toUpperCase(),
@@ -196,16 +205,16 @@ router.post('/validate', async (req, res) => {
     }
 
     // Check minimum purchase
-    if (totalAmount < coupon.minPurchase) {
+    if (amount < coupon.minPurchase) {
       return res.status(400).json({
-        message: `Minimum purchase of $${coupon.minPurchase} required`,
+        message: `Minimum purchase of ₹${coupon.minPurchase} required`,
       });
     }
 
     // Calculate discount
     let discount = 0;
     if (coupon.discountType === 'percentage') {
-      discount = (totalAmount * coupon.discountValue) / 100;
+      discount = (amount * coupon.discountValue) / 100;
       if (coupon.maxDiscount) {
         discount = Math.min(discount, coupon.maxDiscount);
       }
@@ -213,9 +222,14 @@ router.post('/validate', async (req, res) => {
       discount = coupon.discountValue;
     }
 
+    // Ensure discount doesn't exceed total amount
+    discount = Math.min(discount, amount);
+
     res.json({
       valid: true,
+      isValid: true,
       discount,
+      discountAmount: discount,
       coupon: {
         code: coupon.code,
         discountType: coupon.discountType,

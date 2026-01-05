@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Lenis from '@studio-freight/lenis';
+// import Lenis from '@studio-freight/lenis';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import axios from 'axios';
 import Navbar from './components/layout/Navbar';
@@ -111,29 +111,7 @@ function App() {
     // (Optional: Add lightweight global listeners here if strictly necessary)
   }, []);
 
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-    });
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
+  // Lenis removed for native reliable scrolling
 
   if (loading) {
     return (
