@@ -434,19 +434,34 @@ body {
   .hero-canvas::after,
   .surface::after,
   .surface::before,
-  .brand-watermark {
-    filter: blur(10px) !important;
-    /* Reduce massive blurs */
+  .brand-watermark,
+  .hero-orb {
+    filter: none !important;
+    /* ZERO blur for max performance */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     mix-blend-mode: normal !important;
-    /* Avoid expensive blending */
-    animation-duration: 0s !important;
-    /* Pause complex background animations or make them very slow? Better to pause for buttery scroll */
-    /* actually let's keep animation but simpler if possible, but removing blend mode helps tons */
+    animation: none !important;
+    /* Kill animations */
+    transition: none !important;
+    opacity: 0.4 !important;
+    /* Lower opacity since blur is gone */
   }
 
-  /* Keep essential animations but remove expensive filters */
-  .hero-orb {
-    filter: blur(15px);
-    /* Reduced from 30px */
+  /* Disable glassmorphism on mobile */
+  .glass-panel,
+  .logo-card,
+  div[class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--card) !important;
+    /* Solid background fallback */
+    border: 1px solid var(--border) !important;
+  }
+
+  /* Kill heavy shadows */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 }

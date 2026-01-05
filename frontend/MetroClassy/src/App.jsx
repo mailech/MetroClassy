@@ -117,7 +117,7 @@ function App() {
       gestureDirection: 'vertical',
       smooth: true,
       mouseMultiplier: 1,
-      smoothTouch: false,
+      smoothTouch: true, // User requested "butter" smooth on mobile
       touchMultiplier: 2,
     });
 
