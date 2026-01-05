@@ -123,7 +123,7 @@ export default function Coupons() {
                                                 </span>
                                             ) : (
                                                 <span className="flex items-center text-green-500">
-                                                    <FiDollarSign className="mr-1" size={12} /> ₹{coupon.discountValue}
+                                                    ₹{coupon.discountValue}
                                                 </span>
                                             )}
                                         </td>
