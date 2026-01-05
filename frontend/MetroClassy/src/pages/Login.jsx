@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import GoogleLoginBtn from '../components/auth/GoogleLoginBtn';
 import axios from 'axios';
 import { FiUpload, FiUser, FiSmartphone, FiCheck } from 'react-icons/fi';
+import loginLogo from '../assets/login-logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -281,7 +282,7 @@ const Login = () => {
               <div className="relative w-40 h-40">
                 <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full animate-pulse" />
                 <img
-                  src={import.meta.env.BASE_URL + 'src/assets/login-logo.png'}
+                  src={loginLogo}
                   alt="MetroClassy"
                   className="relative w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                 />
