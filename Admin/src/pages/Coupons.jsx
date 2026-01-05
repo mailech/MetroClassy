@@ -112,6 +112,9 @@ export default function Coupons() {
                                             {coupon.description && (
                                                 <div className="text-xs text-theme-tertiary mt-1">{coupon.description}</div>
                                             )}
+                                            {coupon.isSpinReward && (
+                                                <div className="text-[10px] font-bold text-purple-500 mt-1 uppercase tracking-wider">🌟 Spin Reward</div>
+                                            )}
                                         </td>
                                         <td className="py-4 text-theme-secondary">
                                             {coupon.category || 'All'}
@@ -228,6 +231,7 @@ function CouponModal({ coupon, onClose, onSuccess }) {
         validUntil: coupon?.validUntil ? new Date(coupon.validUntil).toISOString().split('T')[0] : '',
         usageLimit: coupon?.usageLimit || '',
         isActive: coupon?.isActive ?? true,
+        isSpinReward: coupon?.isSpinReward ?? false,
     });
 
     const mutation = useMutation({
@@ -387,7 +391,7 @@ function CouponModal({ coupon, onClose, onSuccess }) {
                             />
                         </div>
 
-                        <div className="flex items-center pt-6">
+                        <div className="flex items-center pt-6 space-x-6">
                             <label className="flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -396,6 +400,16 @@ function CouponModal({ coupon, onClose, onSuccess }) {
                                     className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
                                 />
                                 <span className="ml-2 text-sm text-theme-primary">Active</span>
+                            </label>
+
+                            <label className="flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isSpinReward}
+                                    onChange={(e) => setFormData({ ...formData, isSpinReward: e.target.checked })}
+                                    className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                                />
+                                <span className="ml-2 text-sm text-theme-primary">Is Spin Reward? (Win Cycle)</span>
                             </label>
                         </div>
                     </div>

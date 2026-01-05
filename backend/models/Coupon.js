@@ -58,6 +58,10 @@ const couponSchema = new mongoose.Schema(
       type: String,
       default: 'admin',
     },
+    isSpinReward: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -111,7 +111,14 @@ const userSchema = new mongoose.Schema(
     ],
     spinsAvailable: {
       type: Number,
-      default: 5
+      default: 0 // Legacy: new users depend on time, not token count
+    },
+    lastSpinDate: {
+      type: Date
+    },
+    spinCount: {
+      type: Number,
+      default: 0
     }
   },
   {

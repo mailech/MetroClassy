@@ -105,102 +105,106 @@ router.put('/', async (req, res) => {
 router.post('/spin', requireAuth, async (req, res) => {
   try {
     const userId = req.user._id;
-    const { category } = req.body;
-
     const user = await User.findById(userId);
 
-    // Legacy migration: If spinsAvailable is undefined, set it based on previous usage
-    if (user.spinsAvailable === undefined) {
-      const config = await ensureConfig();
-      // If they used it before, they have 0 left. If not, give them 1 (as per "old users get 1" request).
-      // However, if we want to be generous or follow the strict "renew" request, we might just give 1.
-      // Let's check the old config to be safe, but prioritize the new rule.
-      const usedBefore = config.usedBy && config.usedBy.includes(userId);
-      user.spinsAvailable = usedBefore ? 0 : 1;
-      await user.save();
+    // 1. Check 3-Day Cooldown
+    const now = new Date();
+    if (user.lastSpinDate) {
+      const diffTime = Math.abs(now - new Date(user.lastSpinDate));
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      if (diffDays < 3) {
+        return res.status(403).json({
+          message: `Spin renews in ${Math.ceil(3 - diffDays)} days`,
+          spinsAvailable: 0
+        });
+      }
     }
 
-    if (user.spinsAvailable <= 0) {
-      return res.status(403).json({
-        message: 'No spins remaining.',
-        spinsAvailable: 0
-      });
-    }
+    // 2. Increment Step
+    let spinCount = (user.spinCount || 0) + 1;
+    let selectedSegment;
 
-
+    // 3. Determine Outcome (Win every 6th spin)
+    const isWinTurn = spinCount % 6 === 0;
 
     const config = await ensureConfig();
-    let availableSegments = config.segments.filter(seg => seg.active !== false);
+    const tryAgainSegment = config.segments.find(s => s.couponCode === 'TRYAGAIN') || {
+      label: 'No Reward',
+      couponCode: 'TRYAGAIN',
+      color: '#f5f5f5'
+    };
 
-    // Filter by Category
-    if (category) {
-      availableSegments = availableSegments.filter(seg =>
-        !seg.category || seg.category === category || seg.category === ''
-      );
-    }
-
-    // NEW: Filter out segments linked to invalid/exhausted coupons
-    // We get all unique codes from segments
-    const segmentCodes = [...new Set(availableSegments.map(s => s.couponCode))];
-
-    // Find valid coupons in DB
-    const validCoupons = await Coupon.find({
-      code: { $in: segmentCodes },
-      isActive: true,
-      validUntil: { $gte: new Date() }, // Not expired
-      $expr: {
-        $cond: {
-          if: { $ne: ["$usageLimit", null] },
-          then: { $lt: ["$usedCount", "$usageLimit"] },
-          else: true
+    if (!isWinTurn) {
+      // Force Loss
+      selectedSegment = tryAgainSegment;
+    } else {
+      // Force Win: Find a "Spin Reward" coupon from DB
+      // "coupon to give is recorded in the admin section" -> isSpinReward: true
+      const prizeCoupons = await Coupon.find({
+        isSpinReward: true,
+        isActive: true,
+        validUntil: { $gte: now },
+        $expr: {
+          $cond: {
+            if: { $ne: ["$usageLimit", null] },
+            then: { $lt: ["$usedCount", "$usageLimit"] },
+            else: true
+          }
         }
-      }
-    });
+      });
 
-    const validCodeMap = new Set(validCoupons.map(c => c.code));
+      if (prizeCoupons.length > 0) {
+        // Pick random prize
+        const randomIndex = Math.floor(Math.random() * prizeCoupons.length);
+        const prize = prizeCoupons[randomIndex];
 
-    // Keep segments that are either standard (no DB coupon like TRYAGAIN) or have valid DB coupon
-    // We assume 'TRYAGAIN' is always valid.
-    availableSegments = availableSegments.filter(seg =>
-      seg.couponCode === 'TRYAGAIN' || validCodeMap.has(seg.couponCode)
-    );
-
-    if (availableSegments.length === 0) {
-      return res.status(400).json({ message: 'No active rewards available at the moment' });
-    }
-
-    const totalProb = availableSegments.reduce((sum, seg) => sum + (seg.probability || 0), 0);
-    const random = Math.random() * totalProb;
-    let cumulative = 0;
-    let selectedSegment = availableSegments[availableSegments.length - 1];
-
-    for (const segment of availableSegments) {
-      cumulative += segment.probability || 0;
-      if (random <= cumulative) {
-        selectedSegment = segment;
-        break;
+        // Construct winning segment (Override a winning-looking segment or just send raw)
+        // We act as if we hit a "Lucky Draw" or similar segment but with specific coupon
+        selectedSegment = {
+          label: prize.discountType === 'percentage' ? `${prize.discountValue}% OFF` : `₹${prize.discountValue} OFF`,
+          reward: prize.description || 'Special Spin Reward',
+          couponCode: prize.code,
+          color: '#fde68a', // Gold color for win
+          probability: 1 // Doesn't matter
+        };
+      } else {
+        // Fallback if no prizes configured: Give Try Again (or a default small coupon?)
+        // Let's fallback to Try Again to avoid errors, and log error
+        console.warn('Spin Win Turn but no isSpinReward coupons found!');
+        selectedSegment = tryAgainSegment;
+        // Don't consume the "Win" turn? Or just bad luck? 
+        // Let's count it as used to prevent infinite retry loops.
       }
     }
 
-    // Decrement spins and save reward
-    user.spinsAvailable -= 1;
-    user.rewards.push({
-      couponCode: selectedSegment.couponCode,
-      label: selectedSegment.label,
-      wonAt: new Date(),
-      isUsed: false
-    });
+    // 4. Update User
+    user.spinCount = spinCount;
+    user.lastSpinDate = new Date();
+    // spinsAvailable is legacy, but let's keep it '0' to signify consumed state until next check
+    user.spinsAvailable = 0;
+
+    if (selectedSegment.couponCode !== 'TRYAGAIN') {
+      user.rewards.push({
+        couponCode: selectedSegment.couponCode,
+        label: selectedSegment.label,
+        wonAt: new Date(),
+        isUsed: false
+      });
+    }
 
     await user.save();
 
     res.json({
       success: true,
-      segment: selectedSegment,
-      message: `Congratulations! You won: ${selectedSegment.label}`,
-      spinsAvailable: user.spinsAvailable
+      segment: selectedSegment, // Frontend accepts this object to display win
+      message: selectedSegment.couponCode !== 'TRYAGAIN'
+        ? `Congratulations! You won: ${selectedSegment.label}`
+        : 'Better luck next time!',
+      spinsAvailable: 0
     });
 
   } catch (error) {
+    console.error('Spin Error:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -210,20 +214,30 @@ router.get('/check-usage', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    // Initialize if logic hasn't run yet
-    let spins = user.spinsAvailable;
-    if (spins === undefined) {
-      const config = await ensureConfig();
-      const usedBefore = config.usedBy && config.usedBy.includes(req.user._id);
-      spins = usedBefore ? 0 : 1;
-      // We do not save here to avoid side effects on GET, unless we want to persist migration immediately.
-      // Let's return the computed value.
+    let canSpin = true;
+    let message = 'Spin available!';
+    let available = 0;
+
+    if (user.lastSpinDate) {
+      const now = new Date();
+      const diffTime = Math.abs(now - new Date(user.lastSpinDate));
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      if (diffDays < 3) {
+        canSpin = false;
+        available = 0;
+        message = `Next spin in ${Math.ceil(3 - diffDays)} days`;
+      } else {
+        available = 1;
+      }
+    } else {
+      // Never spun
+      available = 1;
     }
 
     res.json({
-      hasUsed: spins <= 0,
-      spinsAvailable: spins,
-      message: spins > 0 ? `You have ${spins} spins available` : 'No spins remaining'
+      hasUsed: !canSpin,
+      spinsAvailable: available,
+      message
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

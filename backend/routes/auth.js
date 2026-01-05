@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
+import Coupon from '../models/Coupon.js';
 import Session from '../models/Session.js';
 import { generateToken, requireAuth } from '../middleware/auth.js';
 import crypto from 'crypto';
@@ -32,10 +33,28 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Fetch 3 random active coupons for new user
+    const starterCoupons = await Coupon.aggregate([
+      { $match: { isActive: true } },
+      { $sample: { size: 3 } }
+    ]);
+
+    const initialRewards = starterCoupons.map(coupon => ({
+      couponCode: coupon.code,
+      label: `Welcome Gift: ${coupon.code}`,
+      wonAt: new Date(),
+      isUsed: false
+    }));
+
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase(),
       password: hashedPassword,
+      rewards: initialRewards,
+      spinsAvailable: 0, // Legacy support
+      spinCount: 0,
+      lastSpinDate: null
     });
 
     const sessionToken = crypto.randomBytes(32).toString('hex');
@@ -133,12 +152,29 @@ router.post('/google', async (req, res) => {
       await user.save();
     } else {
       // Create new user
+      // Fetch 3 random active coupons for new user
+      const starterCoupons = await Coupon.aggregate([
+        { $match: { isActive: true } },
+        { $sample: { size: 3 } }
+      ]);
+
+      const initialRewards = starterCoupons.map(coupon => ({
+        couponCode: coupon.code,
+        label: `Welcome Gift: ${coupon.code}`,
+        wonAt: new Date(),
+        isUsed: false
+      }));
+
       user = await User.create({
         name,
         email: email.toLowerCase(),
         picture,
         googleId,
         phone: mobile, // Map mobile from frontend to phone
+        rewards: initialRewards,
+        spinsAvailable: 0,
+        spinCount: 0,
+        lastSpinDate: null
         // Password not required due to schema change
       });
     }
