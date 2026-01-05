@@ -108,7 +108,8 @@ body {
   background-position: center;
   background-size: contain;
   opacity: 0.08;
-  filter: drop-shadow(0 30px 60px rgba(3, 3, 10, 0.9));
+  /* User requested blur for the logo in background */
+  filter: drop-shadow(0 30px 60px rgba(3, 3, 10, 0.9)) blur(8px);
   mix-blend-mode: screen;
   pointer-events: none;
   z-index: 0;

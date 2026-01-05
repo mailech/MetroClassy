@@ -6,18 +6,37 @@ import axios from 'axios';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 
+// Safe lazy import that reloads page on chunk error (version mismatch)
+const lazyWithRetries = (importComponent) => {
+  return lazy(() =>
+    importComponent().catch((error) => {
+      // Check if it's a chunk loading error
+      if (
+        error.message.includes("Failed to fetch dynamically imported module") ||
+        error.message.includes("is not suitable for validation") ||
+        error.message.includes("Loading chunk")
+      ) {
+        // Reload page to get fresh index.html
+        window.location.reload();
+        return; // specific return not needed as reload happens, but keeps promise pending/rejected
+      }
+      throw error;
+    })
+  );
+};
+
 // Lazy load pages for performance
-const Home = lazy(() => import('./pages/Home'));
-const Products = lazy(() => import('./pages/Products'));
-const ProductDetails = lazy(() => import('./pages/ProductDetails'));
-const Cart = lazy(() => import('./pages/Cart'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Checkout = lazy(() => import('./pages/Checkout'));
-const Wishlist = lazy(() => import('./pages/Wishlist'));
-const ActionSearchBarDemo = lazy(() => import('./pages/ActionSearchDemo'));
-const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
+const Home = lazyWithRetries(() => import('./pages/Home'));
+const Products = lazyWithRetries(() => import('./pages/Products'));
+const ProductDetails = lazyWithRetries(() => import('./pages/ProductDetails'));
+const Cart = lazyWithRetries(() => import('./pages/Cart'));
+const Login = lazyWithRetries(() => import('./pages/Login'));
+const Register = lazyWithRetries(() => import('./pages/Register'));
+const Dashboard = lazyWithRetries(() => import('./pages/Dashboard'));
+const Checkout = lazyWithRetries(() => import('./pages/Checkout'));
+const Wishlist = lazyWithRetries(() => import('./pages/Wishlist'));
+const ActionSearchBarDemo = lazyWithRetries(() => import('./pages/ActionSearchDemo'));
+const OrderSuccess = lazyWithRetries(() => import('./pages/OrderSuccess'));
 import { CartProvider } from './context/CartContext';
 
 import { AuthProvider } from './context/AuthContext';

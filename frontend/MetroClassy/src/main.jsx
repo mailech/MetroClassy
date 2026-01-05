@@ -12,12 +12,16 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "903060516856-
 
 // AUTOMATIC VERSION RECOVERY
 // If a user clicks a link to a lazy-loaded chunk that was just deleted by a new deployment, auto-reload to get new index.
-window.addEventListener('error', (e) => {
-  const isChunkError = /Loading chunk [\d]+ failed/.test(e.message) || /Failed to fetch dynamically imported module/.test(e.message);
+const handleGlobalError = (eventOrMessage) => {
+  const message = eventOrMessage.message || eventOrMessage.reason?.message || String(eventOrMessage);
+  const isChunkError = /Loading chunk [\d]+ failed/.test(message) || /Failed to fetch dynamically imported module/.test(message);
   if (isChunkError) {
     window.location.reload();
   }
-});
+};
+
+window.addEventListener('error', handleGlobalError);
+window.addEventListener('unhandledrejection', handleGlobalError);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
