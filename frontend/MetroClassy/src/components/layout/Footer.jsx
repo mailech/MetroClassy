@@ -48,15 +48,15 @@ const Footer = () => {
     contact: [
       {
         icon: FiMapPin,
-        text: '123 Metro Street, Shopping District, City, Country',
+        text: 'khaliyamari, Dibrugarh, Assam',
       },
       {
         icon: FiPhone,
-        text: '+1 (555) 123-4567',
+        text: '8812888298',
       },
       {
         icon: FiMail,
-        text: 'info@metroclassy.com',
+        text: 'metroclassy1223@gmail.com',
       },
     ],
   };
@@ -91,22 +91,7 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-            <div className="pt-3 border-t border-gray-800">
-              <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 mb-1.5">
-                Signature Logos
-              </p>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {footerLogos.map((logo) => (
-                  <div
-                    key={logo.label}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 border border-white/10"
-                  >
-                    <img src={logo.src} alt={`${logo.label} emblem`} className="h-6 w-6 object-contain" />
-                    <span className="text-[11px] text-gray-300">{logo.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+
           </div>
 
           {/* Quick Links */}
@@ -215,15 +200,7 @@ const Footer = () => {
             </form>
           </div>
 
-          {/* Signatures */}
-          <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-600">Established 2024</p>
-            <div className="flex justify-center gap-2 opacity-50">
-              {footerLogos.map((logo) => (
-                <img key={logo.label} src={logo.src} className="h-5 w-5 object-contain grayscale" alt="" />
-              ))}
-            </div>
-          </div>
+
         </div>
 
         <div className="mt-6 pt-4 border-t border-gray-800">
