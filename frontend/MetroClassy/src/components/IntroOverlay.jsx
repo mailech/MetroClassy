@@ -1,78 +1,67 @@
-
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import introVideo from '../assets/intro-video.mp4';
+import './IntroOverlay.css';
+import logo1 from '../assets/logo1.png';
 
 const IntroOverlay = () => {
-    const [show, setShow] = useState(() => {
+    // Check session storage to show only once per session
+    const [visible, setVisible] = useState(() => {
         return !sessionStorage.getItem('introPlayed');
     });
+    const [exiting, setExiting] = useState(false);
 
     useEffect(() => {
-        if (show) {
-            sessionStorage.setItem('introPlayed', 'true');
-        }
-    }, [show]);
+        if (!visible) return;
 
-    const handleVideoEnd = () => {
-        setShow(false);
-    };
+        // Mark as played
+        sessionStorage.setItem('introPlayed', 'true');
 
-    if (!show) return null;
+        // Wait for LOAD_TIME then exit
+        const timer = setTimeout(() => {
+            setExiting(true);
+
+            // Wait for animation to finish before unmounting
+            setTimeout(() => {
+                setVisible(false);
+            }, 600); // 0.6s match the CSS transition
+
+        }, 5000); // 5 seconds load time
+
+        return () => clearTimeout(timer);
+    }, [visible]);
+
+    if (!visible) return null;
 
     return (
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8 }}
-                className="fixed inset-0 z-[9999] flex items-center justify-center"
-                style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                }}
-            >
-                {/* Animated background pattern */}
-                <div
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                        backgroundImage: `
-              radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)
-            `
-                    }}
-                />
+        <div className={`splash-container ${exiting ? 'slide-up-exit' : ''}`} id="app-frame">
+            <div className="mobile-frame">
 
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="relative z-10 w-full max-w-4xl px-4"
-                >
-                    <video
-                        src={introVideo}
-                        autoPlay
-                        muted
-                        playsInline
-                        onEnded={handleVideoEnd}
-                        preload="auto"
-                        className="w-full h-auto rounded-2xl shadow-2xl"
-                        style={{
-                            maxHeight: '80vh',
-                            objectFit: 'contain',
-                        }}
-                    />
-                </motion.div>
+                <div className="marquee-container">
+                    <div className="marquee-row scroll-left">Collection Collection Collection Collection</div>
+                    <div className="marquee-row scroll-right">New Season New Season New Season New Season</div>
+                    <div className="marquee-row scroll-left">Exclusive Exclusive Exclusive Exclusive</div>
+                    <div className="marquee-row scroll-right">Loading Loading Loading Loading</div>
+                    <div className="marquee-row scroll-left">Metroclassy Metroclassy Metroclassy Metroclassy</div>
+                </div>
 
-                {/* Skip button */}
-                <button
-                    onClick={handleVideoEnd}
-                    className="absolute bottom-8 right-8 px-6 py-3 bg-white/20 backdrop-blur-md text-white rounded-full font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30"
-                >
-                    Skip Intro
-                </button>
-            </motion.div>
-        </AnimatePresence>
+                <div className="content-layer">
+                    <img src={logo1} alt="Logo" className="logo-img" />
+
+                    <div className="frequency-loader">
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                        <div className="freq-bar"></div>
+                    </div>
+
+                    <div className="catchy-text">Curating Collection</div>
+                </div>
+
+                <div className="version-text">V.2.0.24 // SECURE</div>
+            </div>
+        </div>
     );
 };
 

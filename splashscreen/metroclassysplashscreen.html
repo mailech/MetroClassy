@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Loading...</title>
+    
+    <style>
+        /* --- 1. MOBILE OPTIMIZATION RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #111;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- 2. THE MOBILE FRAME --- */
+        .mobile-frame {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            background-color: #000000;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* --- 3. BACKGROUND SCROLLING TEXT --- */
+        .marquee-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            opacity: 0.15;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .marquee-row {
+            white-space: nowrap;
+            font-size: 80px;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            line-height: 0.8;
+        }
+        
+        .scroll-left { animation: scrollLeft 20s linear infinite; }
+        .scroll-right { animation: scrollRight 20s linear infinite; }
+
+        /* --- 4. LOGO & CONTENT --- */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo-img {
+            width: 60%;
+            max-width: 250px;
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* --- 5. FREQUENCY LOADER --- */
+        .frequency-loader {
+            margin-top: 50px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .freq-bar {
+            width: 4px;
+            background-color: #fff;
+            animation: frequency 1s ease-in-out infinite;
+            border-radius: 2px;
+        }
+
+        /* Staggered animation delays */
+        .freq-bar:nth-child(1) { height: 10px; animation-delay: 0.0s; }
+        .freq-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+        .freq-bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
+        .freq-bar:nth-child(4) { height: 25px; animation-delay: 0.3s; }
+        .freq-bar:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+        .freq-bar:nth-child(6) { height: 20px; animation-delay: 0.5s; }
+        .freq-bar:nth-child(7) { height: 15px; animation-delay: 0.2s; }
+
+        /* --- 6. CATCHY TEXT BELOW LOADER --- */
+        .catchy-text {
+            margin-top: 20px;
+            color: #888;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            animation: pulseText 2s infinite ease-in-out;
+        }
+
+        /* --- 7. FOOTER TEXT --- */
+        .version-text {
+            position: absolute;
+            bottom: 40px;
+            color: #555;
+            font-size: 10px;
+            letter-spacing: 2px;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollRight {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes frequency {
+            0% { height: 10px; opacity: 0.5; }
+            50% { height: 35px; opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+            100% { height: 10px; opacity: 0.5; }
+        }
+        
+        @keyframes pulseText {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* --- EXIT TRANSITION --- */
+        .slide-up-exit {
+            transform: translateY(-100%);
+            transition: transform 0.6s cubic-bezier(0.7, 0, 0.84, 0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame" id="app-frame">
+        
+        <div class="marquee-container">
+            <div class="marquee-row scroll-left">Collection Collection Collection Collection</div>
+            <div class="marquee-row scroll-right">New Season New Season New Season New Season</div>
+            <div class="marquee-row scroll-left">Exclusive Exclusive Exclusive Exclusive</div>
+            <div class="marquee-row scroll-right">Loading Loading Loading Loading</div>
+            <div class="marquee-row scroll-left">Metroclassy Metroclassy Metroclassy Metroclassy</div>
+        </div>
+
+        <div class="content-layer">
+            <img src="logo1.png" alt="Logo" class="logo-img">
+            
+            <div class="frequency-loader">
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+                <div class="freq-bar"></div>
+            </div>
+            
+            <div class="catchy-text">Curating Collection</div>
+        </div>
+
+        <div class="version-text">V.2.0.24 // SECURE</div>
+    </div>
+
+    <script>
+        const REDIRECT_TO = 'home.html';
+        const LOAD_TIME = 5000; // Updated to 5 seconds
+
+        window.addEventListener('load', () => {
+            const frame = document.getElementById('app-frame');
+
+            setTimeout(() => {
+                // Trigger Slide Up Animation
+                frame.classList.add('slide-up-exit');
+
+                // Redirect after animation completes
+                setTimeout(() => {
+                    window.location.href = REDIRECT_TO;
+                }, 600); 
+
+            }, LOAD_TIME);
+        });
+    </script>
+</body>
+</html>
