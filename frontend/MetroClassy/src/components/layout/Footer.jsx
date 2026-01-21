@@ -18,10 +18,10 @@ const Footer = () => {
     main: [
       { name: 'Home', href: '/' },
       { name: 'Products', href: '/products' },
-      { name: 'About', href: '#' },
-      { name: 'Contact', href: '#' },
-      { name: 'Terms & Conditions', href: '#' },
-      { name: 'Privacy Policy', href: '#' },
+      { name: 'About', href: '/about' },
+      { name: 'Contact', href: '/contact' },
+      { name: 'Shipping', href: '/shipping' }, // Added Shipping
+      { name: 'Terms & Privacy', href: '/terms-policy' },
     ],
     social: [
       {

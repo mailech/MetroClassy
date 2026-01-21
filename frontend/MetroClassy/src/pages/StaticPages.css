@@ -1,0 +1,407 @@
+/* Legacy Styles from static HTML pages */
+:root {
+    --bg-body-legacy: #080c14;
+    --bg-card: #0f1522;
+    --bg-card-glass: rgba(15, 21, 34, 0.7);
+    --text-main: #ffffff;
+    --text-muted: #8890a0;
+    --text-link: #cbd5e1;
+    --accent-gold: #eebb4d;
+    --accent-purple: #584bf2;
+    --element-bg: #161d2d;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --transition: all 0.3s ease;
+    --list-bullet-color: #5b50e5;
+}
+
+body.light-mode {
+    --bg-body-legacy: #f0f2f5;
+    --bg-card: #ffffff;
+    --bg-card-glass: rgba(255, 255, 255, 0.9);
+    --text-main: #111625;
+    --text-muted: #64748b;
+    --text-link: #334155;
+    --element-bg: #e2e8f0;
+    --border-color: #cbd5e1;
+}
+
+/* Common Classes */
+.legacy-container {
+    padding: 120px 20px 80px;
+    background: radial-gradient(circle at 50% 0%, rgba(88, 75, 242, 0.15) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--text-main);
+}
+
+.legacy-content-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Contact Page Styles */
+.contact-card {
+    width: 100%;
+    background: var(--bg-card-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    position: relative;
+    color: var(--text-main);
+}
+
+.card-info h1 {
+    font-size: 3rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    background: linear-gradient(to right, var(--text-main), var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.card-info p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+.info-list .item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-list .icon-box {
+    width: 40px;
+    height: 40px;
+    background: var(--element-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-gold);
+}
+
+/* About Page Styles */
+.hero-section {
+    text-align: center;
+    margin-bottom: 80px;
+    animation: fadeIn 1s ease;
+}
+
+.eyebrow {
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    background: linear-gradient(to right, var(--text-main), var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.founder-card {
+    background: var(--bg-card-glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 60px;
+    margin-bottom: 80px;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.founder-content h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.founder-content p {
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.signature-area {
+    margin-top: 30px;
+}
+
+.signature-text {
+    font-family: 'Herr Von Muellerhoff', cursive;
+    font-size: 3.5rem;
+    color: var(--accent-gold);
+    transform: rotate(-5deg);
+    display: inline-block;
+}
+
+.founder-role {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    margin-top: 5px;
+    opacity: 0.8;
+}
+
+.founder-visual {
+    height: 100%;
+    min-height: 300px;
+    background: var(--element-bg);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.founder-visual::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: linear-gradient(45deg, transparent 45%, var(--accent-purple) 45%, var(--accent-purple) 55%, transparent 55%);
+    opacity: 0.1;
+    transform: rotate(45deg);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.value-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.value-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-purple);
+}
+
+.value-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--element-bg);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-gold);
+}
+
+.value-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.value-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Shipping & Policy Styles */
+.policy-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.policy-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-main);
+}
+
+.policy-intro {
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.policy-section {
+    margin-bottom: 40px;
+}
+
+.policy-section h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--text-main);
+    border-left: 4px solid var(--accent-purple);
+    padding-left: 15px;
+}
+
+.policy-text {
+    margin-bottom: 15px;
+    color: var(--text-muted);
+}
+
+.policy-list {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.policy-list li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 12px;
+    color: var(--text-muted);
+}
+
+.policy-list li::before {
+    content: "✓";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    color: var(--list-bullet-color);
+    font-size: 0.9rem;
+}
+
+.highlight {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.contact-box {
+    background-color: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-top: 50px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.contact-box strong {
+    color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+    .legacy-container {
+        padding: 40px 16px 60px;
+        /* Reduced from 120px top padding to avoid huge gap */
+    }
+
+    .legacy-content-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+
+    .contact-card {
+        grid-template-columns: 1fr;
+        padding: 24px;
+        gap: 30px;
+        border-radius: 20px;
+    }
+
+    .card-info h1 {
+        font-size: 2.2rem;
+        /* Smaller font for mobile */
+    }
+
+    .card-info p {
+        margin-bottom: 25px;
+        font-size: 0.95rem;
+    }
+
+    /* About Page Mobile Updates */
+    .hero-title {
+        font-size: 2.2rem;
+    }
+
+    .hero-desc {
+        font-size: 0.95rem;
+        padding: 0 10px;
+    }
+
+    .founder-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 30px;
+    }
+
+    .founder-visual {
+        display: none;
+        /* Keep hidden on mobile as per design, but ensure content is centered */
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Policy Pages Mobile Updates */
+    .policy-title {
+        font-size: 2rem;
+    }
+
+    .policy-header {
+        margin-bottom: 30px;
+    }
+
+    .policy-section h3 {
+        font-size: 1.2rem;
+    }
+
+    .contact-box {
+        padding: 20px;
+        margin-top: 30px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - MetroClassy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-body: #080c14;
+            --bg-card: #0f1522;
+            --bg-card-glass: rgba(15, 21, 34, 0.7);
+            --text-main: #ffffff;
+            --text-muted: #8890a0;
+            --text-link: #cbd5e1;
+            --accent-gold: #eebb4d;
+            --accent-purple: #584bf2;
+            --element-bg: #161d2d;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        /* LIGHT MODE OVERRIDES */
+        body.light-mode {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-card-glass: rgba(255, 255, 255, 0.9);
+            --text-main: #111625;
+            --text-muted: #64748b;
+            --text-link: #334155;
+            --element-bg: #e2e8f0;
+            --border-color: #cbd5e1;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- HEADER --- */
+        nav {
+            padding: 25px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+        }
+
+        .brand-logo-link {
+            display: block;
+        }
+
+        .header-logo-img,
+        .footer-logo-img {
+            display: block;
+            width: auto;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-logo-img {
+            height: 32px;
+        }
+
+        .footer-logo-img {
+            height: 45px;
+            margin: 0 auto 15px auto;
+        }
+
+        .logo-for-light-mode {
+            display: none !important;
+        }
+
+        .logo-for-dark-mode {
+            display: block !important;
+        }
+
+        body.light-mode .logo-for-light-mode {
+            display: block !important;
+        }
+
+        body.light-mode .logo-for-dark-mode {
+            display: none !important;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- MAIN SECTION --- */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 20px 80px;
+            background: radial-gradient(circle at 50% 0%, rgba(88, 75, 242, 0.15) 0%, transparent 50%);
+        }
+
+        .contact-card {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--bg-card-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            /* Contains the flying plane */
+            position: relative;
+        }
+
+        /* Left Side */
+        .card-info h1 {
+            font-size: 3rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--text-main), var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-info p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .info-list .item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-list .icon-box {
+            width: 40px;
+            height: 40px;
+            background: var(--element-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+        }
+
+        /* --- RIGHT SIDE (FORM & SUCCESS AREA) --- */
+        .form-wrapper {
+            position: relative;
+            min-height: 400px;
+            /* Ensure height doesn't collapse */
+        }
+
+        /* Form Styles */
+        .card-form {
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        /* Hidden state for Form */
+        .card-form.hidden {
+            opacity: 0;
+            transform: translateX(-20px);
+            pointer-events: none;
+            position: absolute;
+            /* Take out of flow */
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--element-bg);
+            border: 1px solid transparent;
+            color: var(--text-main);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-purple);
+            background: var(--bg-card);
+        }
+
+        textarea.input-field {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-send {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            background: var(--text-main);
+            color: var(--bg-body);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- ANIMATION SUCCESS VIEW --- */
+        .success-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+            /* Delay to wait for form hide */
+            pointer-events: none;
+        }
+
+        .success-view.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        /* Paper Plane Animation */
+        .plane-container {
+            margin-bottom: 20px;
+            color: var(--accent-purple);
+        }
+
+        /* The flying animation */
+        @keyframes flyAway {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            40% {
+                transform: translate(-10px, 10px) scale(0.9);
+            }
+
+            /* Pull back slightly */
+            100% {
+                transform: translate(150px, -150px) scale(0.5);
+                opacity: 0;
+            }
+
+            /* Fly top right */
+        }
+
+        @keyframes landIn {
+            0% {
+                transform: translate(-50px, 50px) scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-view.active .plane-icon {
+            animation: landIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .success-title {
+            font-size: 2rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .success-msg {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--bg-body);
+            border-top: 1px solid var(--border-color);
+            padding: 60px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .footer-logo-container {
+            margin-bottom: 30px;
+        }
+
+        .footer-tagline {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-nav a {
+            color: var(--text-link);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .footer-nav a:hover {
+            color: var(--accent-purple);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--element-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .social-icon:hover {
+            background: var(--accent-purple);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .newsletter-box {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            background: var(--element-bg);
+            border: 1px solid var(--border-color);
+            padding: 16px 60px 16px 25px;
+            border-radius: 50px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .newsletter-btn {
+            position: absolute;
+            right: 6px;
+            top: 6px;
+            bottom: 6px;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .newsletter-btn:hover {
+            background: #4338ca;
+        }
+
+        .copyright {
+            color: #4b5563;
+            font-size: 0.8rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-toggle {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--text-muted);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+
+        .footer-toggle:hover {
+            opacity: 1;
+            border-color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .contact-card {
+                grid-template-columns: 1fr;
+                padding: 30px;
+            }
+
+            .footer-nav {
+                gap: 20px;
+                font-size: 0.9rem;
+            }
+
+            .card-info h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="#" class="brand-logo-link">
+            <img src="logo-white.png" alt="MetroClassy" class="header-logo-img logo-for-dark-mode">
+            <img src="logo-dark.png" alt="MetroClassy" class="header-logo-img logo-for-light-mode">
+        </a>
+
+        <div class="nav-icons">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+    </nav>
+
+    <main>
+        <div class="contact-card">
+            <div class="card-info">
+                <h1>Let's talk style.</h1>
+                <p>Have questions about the latest insignia capsules? Reach out to our design team.</p>
+
+                <div class="info-list">
+                    <div class="item">
+                        <div class="icon-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <span>contact@metroclassy.com</span>
+                    </div>
+                    <div class="item">
+                        <div class="icon-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <span>Guwahati, Assam</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-wrapper">
+
+                <form class="card-form" id="contactForm">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="nameInput" class="input-field" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" class="input-field" placeholder="john@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="input-field" placeholder="How can we help?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-send">Send Message</button>
+                </form>
+
+                <div class="success-view" id="successView">
+                    <div class="plane-container">
+                        <svg class="plane-icon" width="80" height="80" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </div>
+                    <h2 class="success-title">Thanks, <span id="userNameDisplay">there</span>!</h2>
+                    <p class="success-msg">Your message is on its way. We'll get back to you shortly.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-logo-container">
+            <img src="logo-white.png" alt="MetroClassy" class="footer-logo-img logo-for-dark-mode">
+            <img src="logo-dark.png" alt="MetroClassy" class="footer-logo-img logo-for-light-mode">
+            <div class="footer-tagline">Crafted for comfort, Designed for you</div>
+        </div>
+
+        <div class="footer-nav">
+            <a href="home.html">Shop</a>
+            <a href="#">Products</a>
+            <a href="aboutus.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="shipping.html">Shipping</a>
+            <a href="termspolicy.html">Privacy Policy</a>
+        </div>
+
+        <div class="social-icons">
+            <a href="#" class="social-icon" title="Facebook"><svg width="20" height="20" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg></a>
+            <a href="#" class="social-icon" title="Instagram"><svg width="20" height="20" fill="none"
+                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg></a>
+            <a href="#" class="social-icon" title="Twitter"><svg width="20" height="20" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z">
+                    </path>
+                </svg></a>
+            <a href="#" class="social-icon" title="LinkedIn"><svg width="20" height="20" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                </svg></a>
+        </div>
+
+        <div class="newsletter-box">
+            <input type="text" class="newsletter-input" placeholder="Join the newsletter">
+            <button class="newsletter-btn">OK</button>
+        </div>
+
+        <div class="copyright">&copy; 2026 MetroClassy. All rights reserved.</div>
+
+        <button class="footer-toggle" id="themeToggle" title="Toggle Theme">
+            <svg id="themeIcon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+        </button>
+    </footer>
+
+    <script>
+        // --- ANIMATION LOGIC ---
+        const contactForm = document.getElementById('contactForm');
+        const successView = document.getElementById('successView');
+        const nameInput = document.getElementById('nameInput');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Stop actual submission for demo
+
+            // 1. Get the first name
+            const fullName = nameInput.value;
+            const firstName = fullName.split(' ')[0]; // Split by space, take first part
+
+            // 2. Set the name in success message
+            if (firstName) {
+                userNameDisplay.textContent = firstName;
+            } else {
+                userNameDisplay.textContent = "there";
+            }
+
+            // 3. Trigger CSS Classes
+            contactForm.classList.add('hidden');
+            successView.classList.add('active');
+        });
+
+
+        // --- THEME LOGIC ---
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = document.getElementById('themeIcon');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            updateIcon(true);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = body.classList.toggle('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            updateIcon(isLight);
+        });
+
+        function updateIcon(isLight) {
+            if (isLight) {
+                themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            } else {
+                themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            }
+        }
+    </script>
+</body>
+
+</html>

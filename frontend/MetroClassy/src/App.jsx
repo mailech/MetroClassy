@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import axios from 'axios';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/layout/ScrollToTop';
 
 // Safe lazy import that reloads page on chunk error (version mismatch)
 const lazyWithRetries = (importComponent) => {
@@ -37,6 +38,10 @@ const Checkout = lazyWithRetries(() => import('./pages/Checkout'));
 const Wishlist = lazyWithRetries(() => import('./pages/Wishlist'));
 const ActionSearchBarDemo = lazyWithRetries(() => import('./pages/ActionSearchDemo'));
 const OrderSuccess = lazyWithRetries(() => import('./pages/OrderSuccess'));
+const About = lazyWithRetries(() => import('./pages/About'));
+const Contact = lazyWithRetries(() => import('./pages/Contact'));
+const Shipping = lazyWithRetries(() => import('./pages/Shipping'));
+const TermsPolicy = lazyWithRetries(() => import('./pages/TermsPolicy'));
 import { CartProvider } from './context/CartContext';
 
 import { AuthProvider } from './context/AuthContext';
@@ -171,6 +176,7 @@ function App() {
       <CartProvider>
         <WishlistProvider>
           <Router>
+            <ScrollToTop />
             <div className={`app-shell theme-${theme}`}>
               <div className="dynamic-backdrop" aria-hidden="true" />
               <div
@@ -212,6 +218,10 @@ function App() {
                         />
                         <Route path="/action-search" element={<ActionSearchBarDemo />} />
                         <Route path="/order-success" element={<OrderSuccess />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/shipping" element={<Shipping />} />
+                        <Route path="/terms-policy" element={<TermsPolicy />} />
                       </Routes>
                     </AnimatePresence>
                   </Suspense>

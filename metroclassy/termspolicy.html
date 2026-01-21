@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policies | MetroClassy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Light Mode Variables */
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --text-muted: #555555;
+            --card-bg: #f4f4f5;
+            --border-color: #e5e7eb;
+            --accent-color: #5b50e5;
+            /* Purple from screenshot */
+            --header-bg: #ffffff;
+            --footer-bg: #0B1120;
+            /* Footer is always dark in many designs, but we will toggle it for full theme support if desired, or keep it dark. Based on request, I will theme it properly. */
+
+            /* Spacing */
+            --container-width: 900px;
+        }
+
+        /* Dark Mode Variables (Default based on screenshots) */
+        body.dark-mode {
+            --bg-color: #0B1120;
+            /* Deep Navy */
+            --text-color: #ffffff;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --header-bg: #0B1120;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- Header (Matches Screenshot 2) --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background-color: var(--header-bg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container img {
+            height: 40px;
+            /* Adjust based on your actual logo size */
+            object-fit: contain;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-icons i {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* --- Main Content --- */
+        .policy-container {
+            max-width: var(--container-width);
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .policy-section {
+            margin-bottom: 60px;
+        }
+
+        .policy-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .effective-date {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 50px 0;
+        }
+
+        /* --- Footer (Matches Screenshot 1) --- */
+        footer {
+            background-color: #080c16;
+            /* Always dark bg for footer as per picture */
+            color: #ffffff;
+            padding: 60px 20px 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-logo {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo img {
+            height: 50px;
+        }
+
+        .footer-nav {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .footer-nav a:hover {
+            color: var(--accent-color);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .social-icons a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Newsletter Input - Pill Shape */
+        .newsletter-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            padding: 15px 25px;
+            padding-right: 70px;
+            /* Space for button */
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+            outline: none;
+        }
+
+        .newsletter-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .copyright {
+            color: #556677;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        /* Theme Toggle Button at Bottom of Footer */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <header>
+        <div class="logo-container">
+            <img src="logo-white.png" alt="MetroClassy" id="header-logo">
+        </div>
+        <div class="header-icons">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </header>
+
+    <main class="policy-container">
+
+        <section class="policy-section">
+            <h1 class="policy-title">Terms and Conditions</h1>
+            <p class="effective-date">Effective Date: January 1, 2025</p>
+
+            <p>Welcome to Metroclassy! By accessing or using our website, you agree to comply with and be bound by the
+                following Terms and Conditions. Please read these terms carefully before using the services provided by
+                Metroclassy. If you do not agree to these terms, please refrain from using our website.</p>
+
+            <h3>Acceptance of Terms</h3>
+            <p>By visiting our website, creating an account, or placing an order, you acknowledge that you have read,
+                understood, and agreed to these Terms and Conditions, along with our Privacy Policy. These Terms and
+                Conditions govern your access to and use of Metroclassy, including any content, functionality, and
+                services offered.</p>
+
+            <h3>Products and Pricing</h3>
+            <p>Metroclassy offers a range of clothing apparel, all of which are listed with their respective prices in
+                Indian Rupees (INR). Please note that prices may fluctuate over time, and product availability is
+                subject to change. Occasionally, products may be unavailable or out of stock, and slight variations in
+                color or size may occur due to manufacturing differences.</p>
+
+            <h3>Orders and Payments</h3>
+            <p>When you place an order, we will process it and send you an order confirmation via email. Payments can be
+                made through various methods, including credit/debit cards, UPI, and bank transfers. Please note that
+                PayPal and COD are not accepted.</p>
+
+            <h3>Shipping and Delivery</h3>
+            <p>At Metroclassy, we currently ship only within India. Shipping times may vary depending on the location,
+                and you will receive an estimated delivery time at checkout. We are committed to ensuring that your
+                order reaches you promptly, but delays beyond our control may occur. In case of any changes to our
+                shipping policies, we will notify you accordingly.</p>
+
+            <h3>Return and Exchange Policy</h3>
+            <p>We accept returns and exchanges within 10 to 15 days, depending on the location. To be eligible for a
+                return or exchange, the product must be unused, with all original tags intact and in its original
+                packaging. Customers must also provide a video of the unboxing process. Certain items, including sale
+                items marked as final sale, worn or washed items, and customized products like personalized T-shirts,
+                are not eligible for returns or exchanges. Refunds will be processed by transferring the amount to the
+                customer’s card or bank account.</p>
+
+            <h3>Order Eligibility</h3>
+            <p>Anyone can place an order on Metroclassy, regardless of whether they have an account with us. By using
+                our services, you agree to provide accurate, current, and complete information. While creating an
+                account is optional, it allows for a quicker checkout, order tracking, and personalized services. If you
+                choose to create an account, you are responsible for maintaining the confidentiality of your account
+                information, including your username and password.</p>
+
+            <h3>Limitation of Liability</h3>
+            <p>Metroclassy is not responsible for any indirect, incidental, or consequential damages resulting from your
+                use of our products or website. If you use our products in a manner that is not intended and it results
+                in damage, we are not liable for those damages.</p>
+        </section>
+
+        <hr>
+
+        <section class="policy-section">
+            <h1 class="policy-title">Privacy Policy</h1>
+            <p class="effective-date">Effective Date: January 1, 2025</p>
+
+            <p>At Metroclassy, we are committed to protecting your privacy. This Privacy Policy outlines the types of
+                personal information we collect, how we use it, and the steps we take to safeguard it. By using our
+                website, you agree to the practices described in this policy.</p>
+
+            <h3>Information We Collect</h3>
+            <p>We collect personal information such as your name, email address, shipping address, phone number, and
+                payment details when you place an order or contact us. In addition, we collect non-personal information,
+                such as browsing history, device information, and usage data, to improve your experience on our website.
+            </p>
+
+            <h3>Non-Personal Information Collection</h3>
+            <p>At Metroclassy, we respect your privacy and ensure that only necessary information is collected. Apart
+                from personal information, we also collect non-personal data to enhance your experience on our website.
+                This non-personal data may include details such as your IP host address, browser type, device-specific
+                identifiers, computer or smart phones configurations, number of times page has been viewed, usage
+                habits, birth date and usage statistics.</p>
+
+            <h3>Sharing Your Information</h3>
+            <p>We do not sell, rent, or share your personal data with third parties except when necessary to fulfill
+                your order (e.g., payment processors or shipping companies). All third parties involved are required to
+                protect your information in accordance with this Privacy Policy.</p>
+
+            <h3>Contact Us</h3>
+            <p>If you have any questions or concerns regarding these Terms and Conditions or Privacy Policy, please
+                contact us at:<br>
+                <strong>Email:</strong> contact@metroclassy.com<br>
+                <strong>Phone:</strong> +91 88128 88298
+            </p>
+        </section>
+
+        <hr>
+
+        <section class="policy-section">
+            <h1 class="policy-title">Disclaimer</h1>
+            <h3>General Disclaimer</h3>
+            <p>The information provided on the Metroclassy website is intended for general informational purposes only.
+                While we strive to keep the information accurate and up-to-date, we make no representations or
+                warranties of any kind, express or implied, about the accuracy, reliability, suitability, or
+                availability with respect to the website or the information, products, services, or related graphics
+                contained on the website. Any reliance you place on such information is therefore strictly at your own
+                risk.</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="logo-white.png" alt="MetroClassy">
+        </div>
+
+        <nav class="footer-nav">
+            <a href="home.html">Shop</a>
+            <a href="#">Products</a>
+            <a href="aboutus.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="shipping.html">Shipping</a>
+            <a href="termspolicy.html">Privacy Policy</a>
+        </nav>
+
+        <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-twitter"></i></a> <a href="#"><i
+                    class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+
+        <div class="newsletter-container">
+            <input type="email" class="newsletter-input" placeholder="Join the newsletter">
+            <button class="newsletter-btn">OK</button>
+        </div>
+
+        <div class="copyright">
+            © 2026 MetroClassy. All rights reserved.
+        </div>
+
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
+            <i class="fa-solid fa-sun"></i>
+        </button>
+    </footer>
+
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const headerLogo = document.getElementById('header-logo');
+        const icon = toggleBtn.querySelector('i');
+
+        // Logo Paths
+        const logoDark = "logo-dark.png";   // Dark text logo (for Light Mode)
+        const logoWhite = "logo-white.png"; // White text logo (for Dark Mode)
+
+        // Function to update Logo and Icon
+        function updateAssets() {
+            if (body.classList.contains('dark-mode')) {
+                // In Dark Mode
+                headerLogo.src = logoWhite;
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun'); // Sun icon to switch to light
+            } else {
+                // In Light Mode
+                headerLogo.src = logoDark;
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon'); // Moon icon to switch to dark
+            }
+        }
+
+        // Event Listener
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            updateAssets();
+
+            // Optional: Save preference to local storage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Check Local Storage on Load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            body.classList.remove('dark-mode');
+        } else {
+            body.classList.add('dark-mode'); // Default to dark if nothing saved
+        }
+        updateAssets();
+
+    </script>
+</body>
+
+</html>
